@@ -132,8 +132,10 @@ function clear_supabase_cache() {
 }
 
 /**
- * Helper para fazer requisições administrativas à API REST do Supabase utilizando o contexto de streams HTTP do PHP.
- * Centralizado no config.php para permitir o reuso tanto no painel admin quanto em chamadas públicas (ex: newsletter).
+ * Helper para fazer requisições administrativas à API REST do Supabase.
+ * Tenta utilizar cURL se estiver ativo no servidor (altamente recomendado e robusto para o Render).
+ * Caso contrário (como no ambiente local de desenvolvimento sem cURL), faz o fallback
+ * usando file_get_contents configurando HTTP/1.1 para o envio do corpo da requisição de forma correta.
  */
 function supabase_admin_request($method, $endpoint, $data = null, $use_admin_auth = false) {
     // Se for uma operação de modificação (POST, PATCH, DELETE), invalida todo o cache de consultas do Supabase
@@ -147,21 +149,23 @@ function supabase_admin_request($method, $endpoint, $data = null, $use_admin_aut
         $bearerToken = $_SESSION['admin_token'];
     }
 
-    // Monta os cabeçalhos em formato de array para estruturação mais segura e compatibilidade de rede
+    $url = SUPABASE_URL . $endpoint;
+    
+    // Configura os cabeçalhos padrão da requisição
     $headers = [
         "apikey: " . SUPABASE_KEY,
         "Authorization: Bearer " . $bearerToken,
         "Content-Type: application/json"
     ];
     
-    // Converte os dados para JSON e calcula o Content-Length caso exista corpo na requisição
+    // Converte os dados para JSON e calcula o tamanho se houver corpo
     $json_content = null;
     if ($data !== null) {
         $json_content = json_encode($data);
         $headers[] = "Content-Length: " . strlen($json_content);
     }
     
-    // Configura o cabeçalho Prefer com base no endpoint (evitando problemas de permissão em tabelas públicas)
+    // Define a preferência de retorno (return=minimal é necessária para evitar erros de RLS em tabelas públicas)
     if ($method !== 'GET') {
         if (strpos($endpoint, '/newsletter') !== false || strpos($endpoint, '/pedidosLink') !== false) {
             $headers[] = "Prefer: return=minimal";
@@ -170,41 +174,72 @@ function supabase_admin_request($method, $endpoint, $data = null, $use_admin_aut
         }
     }
 
-    // Configura as opções do stream HTTP
-    $opts = [
-        "http" => [
-            "method" => $method,
-            // Junta todos os cabeçalhos separados por quebra de linha CR+LF obrigatória do protocolo HTTP
-            "header" => implode("\r\n", $headers) . "\r\n",
-            "ignore_errors" => true // Captura a resposta mesmo se retornar status de erro (4xx/5xx)
-        ]
-    ];
-    
-    // Vincula o corpo da requisição ao stream de dados
-    if ($json_content !== null) {
-        $opts["http"]["content"] = $json_content;
-    }
-    
-    $context = stream_context_create($opts);
-    $url = SUPABASE_URL . $endpoint;
-    
-    // Executa a requisição REST
-    $response = @file_get_contents($url, false, $context);
-    if ($response === false) {
-        return false;
-    }
-    
-    // Verifica se houve erro HTTP analisando os cabeçalhos de resposta
-    if (isset($http_response_header)) {
-        preg_match('{HTTP\/\S+\s+(\d+)}', $http_response_header[0], $matches);
-        $status = intval($matches[1]);
-        if ($status >= 400) {
-            // Loga o erro retornado pela API do Supabase no log do sistema
-            error_log("Supabase API Error ($status): " . $response);
+    // MODO 1: Se o cURL estiver disponível, utiliza ele para fazer o envio (ideal para produção)
+    if (function_exists('curl_init')) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        
+        if ($json_content !== null) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $json_content);
+        }
+        
+        $response = curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+        
+        // Verifica erros de rede cURL
+        if ($response === false) {
+            error_log("Supabase cURL Error: " . $error);
             return false;
         }
+        
+        // Verifica se a API do Supabase retornou erro HTTP >= 400
+        if ($status >= 400) {
+            error_log("Supabase cURL API Error ($status): " . $response);
+            return false;
+        }
+        
+        return json_decode($response, true);
+    } 
+    // MODO 2: Se cURL estiver desativado, usa o fallback baseado no stream de dados com HTTP/1.1
+    else {
+        $opts = [
+            "http" => [
+                "method" => $method,
+                "header" => implode("\r\n", $headers) . "\r\n",
+                "protocol_version" => "1.1", // Necessário para que proxies na nuvem encaminhem o corpo do POST
+                "ignore_errors" => true
+            ]
+        ];
+        
+        if ($json_content !== null) {
+            $opts["http"]["content"] = $json_content;
+        }
+        
+        $context = stream_context_create($opts);
+        $response = @file_get_contents($url, false, $context);
+        
+        if ($response === false) {
+            return false;
+        }
+        
+        // Trata retornos de erro do Supabase via cabeçalhos de fluxo
+        if (isset($http_response_header)) {
+            preg_match('{HTTP\/\S+\s+(\d+)}', $http_response_header[0], $matches);
+            $status = intval($matches[1]);
+            if ($status >= 400) {
+                error_log("Supabase Stream API Error ($status): " . $response);
+                return false;
+            }
+        }
+        
+        return json_decode($response, true);
     }
-    
-    return json_decode($response, true);
 }
 ?>
