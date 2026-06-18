@@ -1,0 +1,37 @@
+<!-- Seção Newsletter & Encomendas: Seção dividida com formulário de newsletter à esquerda e formulário de pedido de link à direita -->
+<section class="newsletter-section">
+  <div class="newsletter-container">
+    
+    <!-- Coluna 1: Alertas via WhatsApp (Newsletter) -->
+    <div class="newsletter-col">
+      <h2>Receba alertas no seu Zap</h2>
+      <p>Cadastre seu WhatsApp e avisamos quando os produtos entrarem em promoção.</p>
+      <!-- Formulário que aciona a função handleSubscribe no envio -->
+      <form class="newsletter-form" onsubmit="return handleSubscribe(event)">
+        <!-- Input do número de WhatsApp com máscara simples e tipo tel -->
+        <input type="tel" name="whatsapp" id="newsletter_whatsapp" placeholder="Ex: (11) 99999-9999" required>
+        <button type="submit" class="btn-newsletter">Quero alertas!</button>
+      </form>
+    </div>
+    
+    <!-- Divisor vertical visual no desktop -->
+    <div class="newsletter-divider"></div>
+    
+    <!-- Coluna 2: Encomendar Link de Afiliado com Desconto -->
+    <div class="newsletter-col">
+      <h2>Encomende seu link com Desconto</h2>
+      <p>Envie o link de qualquer produto e geramos o seu link de afiliado com desconto.</p>
+      <!-- Formulário que aciona a função handleLinkRequest no envio -->
+      <form class="link-request-form" onsubmit="return handleLinkRequest(event)">
+        <!-- Input do Nome do cliente -->
+        <input type="text" name="nome" id="request_nome" placeholder="Seu nome" required>
+        <!-- Input do WhatsApp do cliente com máscara simples e tipo tel -->
+        <input type="tel" name="whatsapp" id="request_whatsapp" placeholder="Seu WhatsApp (Ex: (11) 99999-9999)" required>
+        <!-- Input do Link do produto original -->
+        <input type="url" name="link" id="request_link" placeholder="Link do produto desejado" required>
+        <button type="submit" class="btn-newsletter btn-request-link">Encomendar Link!</button>
+      </form>
+    </div>
+    
+  </div>
+</section>
