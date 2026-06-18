@@ -1,26 +1,25 @@
 # render.yaml - Arquivo de configuração de Blueprint para o deploy automático no Render.
-# Este arquivo define o serviço web PHP e as variáveis de ambiente necessárias.
+# Este arquivo define o serviço web rodando via Docker e as variáveis de ambiente necessárias.
 
 services:
   - type: web
     name: mimosshopbrasil
-    # Define o ambiente nativo como PHP
-    env: php
+    # Define o ambiente como docker para utilizar o Dockerfile do projeto
+    env: docker
     # Usa o plano free (gratuito) do Render
     plan: free
-    # Não há necessidade de comando de build para este projeto vanilla PHP
+    # Com docker, o build e o start são gerenciados pelo Dockerfile automaticamente
     buildCommand: ""
-    # O Render detectará automaticamente o index.php e o servirá usando o Apache padrão
     startCommand: ""
-    # Variáveis de ambiente que precisam ser preenchidas no painel do Render
+    # Variáveis de ambiente que serão solicitadas ao usuário no momento do deploy
     envVars:
       - key: SUPABASE_URL
-        placeholder: "URL da API do seu Supabase"
+        sync: false
       - key: SUPABASE_KEY
-        placeholder: "Anon Key/Public Key ou Service Role Key do Supabase"
+        sync: false
       - key: CLOUDINARY_CLOUD_NAME
-        placeholder: "Cloud Name do seu Cloudinary"
+        sync: false
       - key: CLOUDINARY_API_KEY
-        placeholder: "API Key do seu Cloudinary"
+        sync: false
       - key: CLOUDINARY_API_SECRET
-        placeholder: "API Secret do seu Cloudinary"
+        sync: false
