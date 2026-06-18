@@ -50,12 +50,18 @@ function load_env($file_path) {
 load_env(__DIR__ . '/.env');
 
 /**
- * Recupera uma variável de ambiente de forma segura, removendo quaisquer aspas extras
- * (simples ou duplas) que possam ter sido injetadas pelo sistema ou pelo arquivo .env.
+ * Recupera uma variável de ambiente de forma segura, removendo quebras de linha (\r, \n),
+ * retornos de carro, espaços extras e aspas (simples ou duplas) nas pontas que possam
+ * quebrar o protocolo HTTP.
  */
 function get_env_safe($key) {
     $val = getenv($key) ?: ($_ENV[$key] ?? '');
-    return trim($val, '"\'');
+    // Remove quebras de linha e espaços
+    $val = trim($val);
+    // Remove aspas simples ou duplas
+    $val = trim($val, '"\'');
+    // Remove possíveis espaços restantes após retirar as aspas
+    return trim($val);
 }
 
 // Configurações do Supabase (Carregadas a partir das variáveis de ambiente com limpeza de aspas)
