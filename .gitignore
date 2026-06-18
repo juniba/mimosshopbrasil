@@ -1,3 +1,4 @@
 # Arquivos de ambiente e caches locais que não devem ser enviados ao repositório Git
 .env
-cache/
+cache/*
+!cache/.gitkeep
