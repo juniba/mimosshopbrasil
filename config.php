@@ -147,30 +147,42 @@ function supabase_admin_request($method, $endpoint, $data = null, $use_admin_aut
         $bearerToken = $_SESSION['admin_token'];
     }
 
-    // Define os cabeçalhos obrigatórios para autenticação da API do Supabase e configura ignore_errors para capturar corpos de erro
+    // Monta os cabeçalhos em formato de array para estruturação mais segura e compatibilidade de rede
+    $headers = [
+        "apikey: " . SUPABASE_KEY,
+        "Authorization: Bearer " . $bearerToken,
+        "Content-Type: application/json"
+    ];
+    
+    // Converte os dados para JSON e calcula o Content-Length caso exista corpo na requisição
+    $json_content = null;
+    if ($data !== null) {
+        $json_content = json_encode($data);
+        $headers[] = "Content-Length: " . strlen($json_content);
+    }
+    
+    // Configura o cabeçalho Prefer com base no endpoint (evitando problemas de permissão em tabelas públicas)
+    if ($method !== 'GET') {
+        if (strpos($endpoint, '/newsletter') !== false || strpos($endpoint, '/pedidosLink') !== false) {
+            $headers[] = "Prefer: return=minimal";
+        } else {
+            $headers[] = "Prefer: return=representation";
+        }
+    }
+
+    // Configura as opções do stream HTTP
     $opts = [
         "http" => [
             "method" => $method,
-            "header" => "apikey: " . SUPABASE_KEY . "\r\n" .
-                        "Authorization: Bearer " . $bearerToken . "\r\n" .
-                        "Content-Type: application/json\r\n",
-            "ignore_errors" => true // Permite ler a resposta mesmo se retornar status HTTP 4xx/5xx
+            // Junta todos os cabeçalhos separados por quebra de linha CR+LF obrigatória do protocolo HTTP
+            "header" => implode("\r\n", $headers) . "\r\n",
+            "ignore_errors" => true // Captura a resposta mesmo se retornar status de erro (4xx/5xx)
         ]
     ];
     
-    // Anexa os dados JSON no corpo da requisição se for uma operação de escrita (POST/PATCH)
-    if ($data !== null) {
-        $opts["http"]["content"] = json_encode($data);
-    }
-    
-    // Requer o retorno da representação modificada em operações de escrita (com exceção de newsletter e pedidosLink, que exigem return=minimal por não possuírem permissão de SELECT público)
-    if ($method !== 'GET') {
-        // Usamos Prefer: return=minimal para /newsletter e /pedidosLink porque o acesso público permite inserção mas não permite seleção (SELECT)
-        if (strpos($endpoint, '/newsletter') !== false || strpos($endpoint, '/pedidosLink') !== false) {
-            $opts["http"]["header"] .= "Prefer: return=minimal\r\n";
-        } else {
-            $opts["http"]["header"] .= "Prefer: return=representation\r\n";
-        }
+    // Vincula o corpo da requisição ao stream de dados
+    if ($json_content !== null) {
+        $opts["http"]["content"] = $json_content;
     }
     
     $context = stream_context_create($opts);
