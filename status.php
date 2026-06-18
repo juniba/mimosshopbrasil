@@ -6,7 +6,7 @@ require_once 'config.php';
 
 header('Content-Type: text/plain; charset=utf-8');
 
-echo "=== DIAGNÓSTICO DE CONEXÃO SUPABASE ===\n\n";
+echo "=== DIAGNÓSTICO DE CONEXÃO SUPABASE (DETALHADO COM cURL) ===\n\n";
 
 // 1. Mostrar as variáveis (mascaradas para segurança)
 $url = SUPABASE_URL;
@@ -20,24 +20,49 @@ if (empty($url) || empty($key)) {
     exit;
 }
 
-// 2. Realizar um teste de GET simples na tabela 'newsletter'
-echo "\n--- TESTANDO GET NA TABELA 'newsletter' ---\n";
-
-$res_get = supabase_admin_request('GET', '/rest/v1/newsletter?select=count');
-echo "Resultado do GET: ";
-var_dump($res_get);
-
-
-// 3. Realizar o teste de POST utilizando a função oficial configurada no config.php
-echo "\n--- TESTANDO POST OFICIAL VIA CONFIG.PHP (SUPABASE_ADMIN_REQUEST) ---\n";
+// 2. Realizar o teste de POST via cURL direto e imprimir TODOS os detalhes
+echo "\n--- TESTANDO POST DIRETO COM cURL NO SUPABASE ---\n";
 
 $payload = [
     'whatsapp' => '5521964120044'
 ];
 
-$res_post = supabase_admin_request('POST', '/rest/v1/newsletter', $payload);
-echo "Resultado do POST:\n";
-var_dump($res_post);
+$url_post = $url . '/rest/v1/newsletter';
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url_post);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+$json_content = json_encode($payload);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $json_content);
+
+$headers = [
+    "apikey: " . $key,
+    "Authorization: Bearer " . $key,
+    "Content-Type: application/json",
+    "Content-Length: " . strlen($json_content),
+    "Prefer: return=minimal"
+];
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+echo "Enviando POST para: " . $url_post . "\n";
+echo "Headers enviados:\n" . implode("\n", $headers) . "\n";
+echo "Corpo do JSON enviado: " . $json_content . "\n\n";
+
+$response = curl_exec($ch);
+$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$error = curl_error($ch);
+curl_close($ch);
+
+echo "=== RESULTADO DO cURL ===\n";
+echo "Status HTTP Retornado: " . $status . "\n";
+if ($response === false) {
+    echo "Erro cURL: " . $error . "\n";
+} else {
+    echo "Corpo da resposta:\n" . $response . "\n";
+}
 
 echo "\nFim do diagnóstico.\n";
 ?>
