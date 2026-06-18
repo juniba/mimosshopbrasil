@@ -37,9 +37,9 @@ function send_new_product_notification($product) {
         $message .= "👉 Compre aqui: {$link}\n";
     }
     
-    // 4. Carrega as configurações da API do WhatsApp do arquivo .env
-    $api_url = getenv('WHATSAPP_API_URL') ?: ($_ENV['WHATSAPP_API_URL'] ?? '');
-    $api_token = getenv('WHATSAPP_API_KEY') ?: ($_ENV['WHATSAPP_API_KEY'] ?? '');
+    // 4. Carrega as configurações da API do WhatsApp do arquivo .env usando a função segura get_env_safe para remover aspas indesejadas
+    $api_url = get_env_safe('WHATSAPP_API_URL');
+    $api_token = get_env_safe('WHATSAPP_API_KEY');
     
     // Caminho do arquivo de logs locais para simulação / auditoria
     $log_file = __DIR__ . '/whatsapp_log.txt';
@@ -64,8 +64,8 @@ function send_new_product_notification($product) {
             $phone_digits = '55' . $phone_digits;
         }
         
-        // Carrega qual serviço de disparo está ativo
-        $service = getenv('WHATSAPP_API_SERVICE') ?: ($_ENV['WHATSAPP_API_SERVICE'] ?? '');
+        // Carrega qual serviço de disparo está ativo limpando as aspas extras
+        $service = get_env_safe('WHATSAPP_API_SERVICE');
 
         // Se o CallMeBot estiver configurado, executa a requisição via método GET
         if ($service === 'callmebot' && !empty($api_token)) {

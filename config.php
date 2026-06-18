@@ -49,14 +49,23 @@ function load_env($file_path) {
 // Carrega as variáveis de ambiente a partir do arquivo .env local
 load_env(__DIR__ . '/.env');
 
-// Configurações do Supabase (Carregadas a partir das variáveis de ambiente)
-define('SUPABASE_URL', getenv('SUPABASE_URL') ?: ($_ENV['SUPABASE_URL'] ?? ''));
-define('SUPABASE_KEY', getenv('SUPABASE_KEY') ?: ($_ENV['SUPABASE_KEY'] ?? ''));
+/**
+ * Recupera uma variável de ambiente de forma segura, removendo quaisquer aspas extras
+ * (simples ou duplas) que possam ter sido injetadas pelo sistema ou pelo arquivo .env.
+ */
+function get_env_safe($key) {
+    $val = getenv($key) ?: ($_ENV[$key] ?? '');
+    return trim($val, '"\'');
+}
 
-// Configurações do Cloudinary para armazenamento de imagens (Carregadas a partir do .env)
-define('CLOUDINARY_CLOUD_NAME', getenv('CLOUDINARY_CLOUD_NAME') ?: ($_ENV['CLOUDINARY_CLOUD_NAME'] ?? ''));
-define('CLOUDINARY_API_KEY', getenv('CLOUDINARY_API_KEY') ?: ($_ENV['CLOUDINARY_API_KEY'] ?? ''));
-define('CLOUDINARY_API_SECRET', getenv('CLOUDINARY_API_SECRET') ?: ($_ENV['CLOUDINARY_API_SECRET'] ?? ''));
+// Configurações do Supabase (Carregadas a partir das variáveis de ambiente com limpeza de aspas)
+define('SUPABASE_URL', get_env_safe('SUPABASE_URL'));
+define('SUPABASE_KEY', get_env_safe('SUPABASE_KEY'));
+
+// Configurações do Cloudinary para armazenamento de imagens (Carregadas com limpeza de aspas)
+define('CLOUDINARY_CLOUD_NAME', get_env_safe('CLOUDINARY_CLOUD_NAME'));
+define('CLOUDINARY_API_KEY', get_env_safe('CLOUDINARY_API_KEY'));
+define('CLOUDINARY_API_SECRET', get_env_safe('CLOUDINARY_API_SECRET'));
 
 /*
   Para uso no frontend JavaScript, expomos as variáveis do Supabase de forma segura.

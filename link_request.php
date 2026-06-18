@@ -59,8 +59,8 @@ if ($res === false) {
 
 // --- ENVIO DA NOTIFICAÇÃO DO CALLMEBOT PARA O ADMINISTRADOR ---
 
-// Recupera a chave da API do CallMeBot das variáveis de ambiente
-$api_token = getenv('WHATSAPP_API_KEY') ?: ($_ENV['WHATSAPP_API_KEY'] ?? '');
+// Recupera de forma segura a chave da API do CallMeBot das variáveis de ambiente, removendo possíveis aspas
+$api_token = get_env_safe('WHATSAPP_API_KEY');
 $admin_phone = "5521964120044"; // Número de WhatsApp cadastrado do administrador vinculado à chave do CallMeBot
 
 if (!empty($api_token)) {
