@@ -9,11 +9,11 @@ $isAdminLogged = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_
 <!-- header.php: contém o cabeçalho da página com navegação dinâmica e condicional -->
 <header>
   <div class="header-inner">
-    <!-- A logo aponta para a página inicial index.php e inclui a imagem do logo (favicon) ao lado do texto -->
+    <!-- A logo aponta para a página inicial index.php e inclui o logotipo do Mimos Shop Brasil -->
     <a href="index.php" class="logo">
-      <!-- Imagem do logo (utilizando o favicon.png estilizado) -->
-      <img src="favicon.png" alt="Logo TechDeal" class="logo-img">
-      Tech<span>Deal</span>
+      <!-- Imagem do logo (utilizando o logo.png recortado com fundo vermelho) -->
+      <img src="img/logo.png" alt="Logo Mimos Shop Brasil" class="logo-img">
+      Mimos<span> Shop Brasil</span>
     </a>
     <!-- Menu de navegação (no centro em desktop, dropdown em mobile) -->
     <nav id="main-nav">

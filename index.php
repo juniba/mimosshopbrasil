@@ -11,19 +11,19 @@ require_once 'config.php';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- SEO Meta Tags básicas -->
-  <title>TechDeal – Melhores ofertas em eletrônicos e tecnologia</title>
-  <meta name="description" content="Encontre as melhores ofertas e descontos do dia em smartphones, notebooks, fones de ouvido e eletrônicos no TechDeal. Compare preços da Amazon e Mercado Livre e economize.">
-  <meta name="keywords" content="TechDeal, comparar preços, ofertas, descontos, eletrônicos, smartphones, notebooks, fones de ouvido, Amazon, Mercado Livre">
+  <!-- SEO Meta Tags básicas - Atualizadas para Mimos Shop Brasil -->
+  <title>Mimos Shop Brasil – Melhores ofertas e descontos do dia</title>
+  <meta name="description" content="Encontre as melhores ofertas e descontos do dia em eletrônicos, utilidades e presentes no Mimos Shop Brasil. Compare preços da Amazon e Mercado Livre e economize.">
+  <meta name="keywords" content="Mimos Shop Brasil, comparar preços, ofertas, descontos, eletrônicos, presentes, utilidades, Amazon, Mercado Livre">
   <meta name="robots" content="index, follow">
   
-  <!-- Open Graph Meta Tags (Para compartilhamento otimizado em redes sociais) -->
-  <meta property="og:title" content="TechDeal – Melhores Ofertas em Eletrônicos e Tecnologia">
-  <meta property="og:description" content="Compare preços das principais lojas, encontre descontos exclusivos e economize todos os dias com o comparador TechDeal.">
+  <!-- Open Graph Meta Tags (Para compartilhamento otimizado em redes sociais - Mimos Shop Brasil) -->
+  <meta property="og:title" content="Mimos Shop Brasil – Melhores Ofertas e Descontos do Dia">
+  <meta property="og:description" content="Compare preços das principais lojas, encontre descontos exclusivos e economize todos os dias com o comparador Mimos Shop Brasil.">
   <meta property="og:image" content="og_banner.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="index.php">
-  <meta property="og:site_name" content="TechDeal">
+  <meta property="og:site_name" content="Mimos Shop Brasil">
   
   <!-- Favicon para exibição correta na aba do navegador -->
   <link rel="icon" type="image/png" href="favicon.png">

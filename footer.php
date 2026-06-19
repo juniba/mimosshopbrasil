@@ -27,8 +27,9 @@ $footer_categorias = json_decode($footer_response, true);
   <div class="footer-inner">
     <div class="footer-grid">
       <div>
-        <div class="footer-logo">Tech<span>Deal</span></div>
-        <p class="footer-desc">Comparador de preços de eletrônicos e tecnologia. Encontre as melhores ofertas na Amazon e Mercado Livre todos os dias.</p>
+        <!-- Logo com o nome da loja Mimos Shop Brasil no rodapé -->
+        <div class="footer-logo">Mimos<span> Shop Brasil</span></div>
+        <p class="footer-desc">Comparador de preços de eletrônicos e utilidades. Encontre as melhores ofertas na Amazon e Mercado Livre todos os dias.</p>
         <div class="affiliate-notice" style="margin-top:1rem;">
           ⚠️ Afiliado: Este site participa do Programa de Associados da Amazon e do Mercado Livre. Ganhamos comissões em compras qualificadas, sem custo adicional para o consumidor.
         </div>
@@ -63,7 +64,8 @@ $footer_categorias = json_decode($footer_response, true);
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2025 TechDeal. Todos os direitos reservados.</span>
+      <!-- Direitos autorais atualizados para Mimos Shop Brasil -->
+      <span>© 2025 Mimos Shop Brasil. Todos os direitos reservados.</span>
       <span>Preços e disponibilidade podem variar. Verifique na loja antes de comprar.</span>
     </div>
   </div>
