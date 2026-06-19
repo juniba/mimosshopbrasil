@@ -1,0 +1,10 @@
+# Arquivos sensíveis que não devem ser copiados para o container Docker
+.env
+.git
+.gitignore
+scratch/
+*.py
+*.md
+Dockerfile
+render.yaml
+.dockerignore

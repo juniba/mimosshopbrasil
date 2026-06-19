@@ -4,9 +4,44 @@
   e gerencia o início de sessões de forma segura em todo o site.
 */
 
-// Define se a sessão ainda não está iniciada e a inicia de forma segura
+// Define se a sessão ainda não está iniciada e a inicia de forma segura com cookies protegidos
 if (session_status() === PHP_SESSION_NONE) {
+    // Configura os cookies de sessão com proteções de segurança contra XSS e CSRF
+    session_set_cookie_params([
+        'lifetime' => 0,         // Cookie expira ao fechar o navegador
+        'path' => '/',           // Disponível em todo o site
+        'secure' => true,        // Transmitido apenas via HTTPS
+        'httponly' => true,      // Inacessível ao JavaScript (proteção XSS)
+        'samesite' => 'Strict'   // Bloqueia envio cross-site (proteção CSRF)
+    ]);
     session_start();
+}
+
+/**
+ * Gera ou retorna o token CSRF da sessão atual.
+ * Utilizado para proteger formulários POST contra ataques de falsificação.
+ */
+function csrf_token() {
+    if (empty($_SESSION['csrf_token'])) {
+        // Gera um token criptograficamente seguro de 32 bytes
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+/**
+ * Valida se o token CSRF enviado pelo formulário corresponde ao da sessão.
+ * Retorna true se válido, false se inválido.
+ */
+function csrf_validate($token) {
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+/**
+ * Gera o campo HTML hidden com o token CSRF para inserir em formulários.
+ */
+function csrf_field() {
+    return '<input type="hidden" name="csrf_token" value="' . csrf_token() . '">';
 }
 
 /**
@@ -186,7 +221,7 @@ function supabase_admin_request($method, $endpoint, $data = null, $use_admin_aut
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true); // Verificação SSL ativada para segurança contra ataques MITM
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         

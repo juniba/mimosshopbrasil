@@ -1,0 +1,15 @@
+# robots.txt: Regras de rastreamento para mecanismos de busca do Mimos Shop Brasil
+# Permite que todos os crawlers acessem o conteúdo público e bloqueia áreas restritas
+
+User-agent: *
+Allow: /
+
+# Bloqueia o acesso a páginas administrativas e arquivos internos
+Disallow: /painel.php
+Disallow: /mcd.php
+Disallow: /auth_session.php
+Disallow: /cache/
+Disallow: /scratch/
+
+# Sitemap dinâmico para facilitar a indexação de produtos e artigos do blog
+Sitemap: https://mimosshopbrasil.com/sitemap.xml

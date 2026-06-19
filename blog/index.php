@@ -1,14 +1,14 @@
 <?php
 /*
-  blog/index.php: Página pública principal do blog (localizada na pasta /blog).
-  Exibe o feed de artigos com layout estruturado (Destaque, Categorias, Artigos Populares e Últimos Artigos) 
-  ou abre uma postagem específica pelo slug.
-  Respeita a regra global de comentários explicativos.
+  blog/index.php: Página pública principal do blog do Mimos Shop Brasil (REDESIGN MODERNO).
+  Exibe o feed de artigos com layout premium (Hero Destaque com Gradiente, Cards Animados,
+  Sidebar com Widgets Dinâmicos, Paginação Server-Side) ou abre uma postagem específica
+  com breadcrumbs, barra de progresso de leitura, compartilhamento social e artigos relacionados.
 */
-// Carrega o arquivo de configuração localizado na pasta raiz de forma robusta usando caminhos absolutos (__DIR__)
+// Carrega o arquivo de configuração localizado na pasta raiz
 require_once __DIR__ . '/../config.php';
 
-// Captura o slug do artigo se fornecido via GET, ou tenta extrair diretamente da URL (suporte universal)
+// Captura o slug do artigo se fornecido via GET, ou tenta extrair da URL amigável
 $slug = isset($_GET['slug']) ? trim($_GET['slug']) : null;
 if ($slug === null) {
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -22,12 +22,18 @@ if ($slug === null) {
     }
 }
 
+// Variáveis para armazenar os artigos do blog separados por seção
 $artigo = null;
 $artigos = [];
 $featured_post = null;
 $popular_posts = [];
+$related_posts = [];
 
-// Prepara os cabeçalhos de autorização padrão para consumo da REST API do Supabase
+// Configuração de paginação server-side (6 artigos por página)
+$per_page = 6;
+$current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+
+// Prepara os cabeçalhos de autorização para consumo da API REST do Supabase
 $blog_opts = [
     "http" => [
         "method" => "GET",
@@ -37,16 +43,26 @@ $blog_opts = [
 ];
 $blog_context = stream_context_create($blog_opts);
 
+// Busca as categorias dinâmicas do Supabase para a sidebar
+$cats_url = SUPABASE_URL . "/rest/v1/categorias?select=*&order=id.asc";
+$cats_response = fetch_supabase_with_cache($cats_url, $blog_context, 300);
+$blog_categorias = json_decode($cats_response, true) ?: [];
+
 if ($slug !== null) {
-    // Busca o artigo específico pelo slug único na tabela 'artigos' (usando cache local de 60 segundos)
+    // Busca o artigo específico pelo slug único na tabela 'artigos'
     $blog_url = SUPABASE_URL . "/rest/v1/artigos?select=*&slug=eq." . rawurlencode($slug) . "&publicado=eq.true";
     $blog_response = fetch_supabase_with_cache($blog_url, $blog_context, 60);
     $result = json_decode($blog_response, true);
     if (!empty($result)) {
         $artigo = $result[0];
+        
+        // Busca artigos relacionados (os mais recentes excluindo o atual) para exibir no final
+        $related_url = SUPABASE_URL . "/rest/v1/artigos?select=id,titulo,slug,resumo,imagem_url,created_at&publicado=eq.true&slug=neq." . rawurlencode($slug) . "&order=created_at.desc&limit=3";
+        $related_response = fetch_supabase_with_cache($related_url, $blog_context, 120);
+        $related_posts = json_decode($related_response, true) ?: [];
     }
 } else {
-    // Busca todos os artigos publicados ordenados pela data de criação decrescente (usando cache local de 120 segundos)
+    // Busca todos os artigos publicados ordenados pela data de criação decrescente
     $blog_url = SUPABASE_URL . "/rest/v1/artigos?select=*&publicado=eq.true&order=created_at.desc";
     $blog_response = fetch_supabase_with_cache($blog_url, $blog_context, 120);
     $raw_artigos = json_decode($blog_response, true) ?: [];
@@ -54,22 +70,36 @@ if ($slug !== null) {
     // Separa os artigos por seções (Destaque, Populares e Últimos Artigos)
     foreach ($raw_artigos as $art) {
         if ($art['is_featured'] === true && $featured_post === null) {
-            // Define o artigo de destaque principal
             $featured_post = $art;
         } elseif ($art['is_popular'] === true) {
-            // Adiciona à lista de artigos populares
             $popular_posts[] = $art;
         } else {
-            // Adiciona à lista geral de últimos artigos
             $artigos[] = $art;
         }
     }
     
-    // Fallback: Caso nenhum artigo esteja marcado como destaque, define o mais recente como destaque
+    // Fallback: se nenhum artigo estiver marcado como destaque, usa o mais recente
     if ($featured_post === null && !empty($artigos)) {
         $featured_post = array_shift($artigos);
     }
 }
+
+/**
+ * Calcula o tempo estimado de leitura de um texto em minutos.
+ * Baseado na velocidade média de leitura em português (200 palavras/minuto).
+ */
+function calc_reading_time($text) {
+    $word_count = str_word_count(strip_tags($text));
+    $minutes = max(1, ceil($word_count / 200));
+    return $minutes;
+}
+
+// Calcula a paginação dos artigos da listagem geral
+$total_artigos = count($artigos);
+$total_pages = max(1, ceil($total_artigos / $per_page));
+$current_page = min($current_page, $total_pages);
+$offset = ($current_page - 1) * $per_page;
+$artigos_paginated = array_slice($artigos, $offset, $per_page);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -77,451 +107,235 @@ if ($slug !== null) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- Define a URL base para que os caminhos relativos (CSS, JS, links) resolvam a partir da raiz do site -->
+  <!-- Define a URL base para que os caminhos relativos resolvam a partir da raiz do site -->
   <base href="/">
   
   <?php if ($artigo !== null): ?>
     <!-- SEO Meta Tags para o Artigo de Blog específico -->
     <title><?php echo htmlspecialchars($artigo['titulo']); ?> – Mimos Shop Brasil</title>
     <meta name="description" content="<?php echo htmlspecialchars($artigo['resumo'] ?? ''); ?>">
+    <meta name="author" content="Mimos Shop Brasil">
+    <link rel="canonical" href="https://mimosshopbrasil.com/blog/<?php echo htmlspecialchars($artigo['slug']); ?>">
+    <!-- Open Graph para compartilhamento otimizado do artigo -->
     <meta property="og:title" content="<?php echo htmlspecialchars($artigo['titulo']); ?> – Mimos Shop Brasil">
     <meta property="og:description" content="<?php echo htmlspecialchars($artigo['resumo'] ?? ''); ?>">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://mimosshopbrasil.com/blog/<?php echo htmlspecialchars($artigo['slug']); ?>">
     <?php if (!empty($artigo['imagem_url'])): ?>
       <meta property="og:image" content="<?php echo htmlspecialchars($artigo['imagem_url']); ?>">
     <?php endif; ?>
+    <meta property="og:site_name" content="Mimos Shop Brasil">
+    
+    <!-- Schema.org Article JSON-LD para SEO estruturado no Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "<?php echo htmlspecialchars($artigo['titulo']); ?>",
+      "description": "<?php echo htmlspecialchars($artigo['resumo'] ?? ''); ?>",
+      <?php if (!empty($artigo['imagem_url'])): ?>
+      "image": "<?php echo htmlspecialchars($artigo['imagem_url']); ?>",
+      <?php endif; ?>
+      "datePublished": "<?php echo $artigo['created_at']; ?>",
+      "author": {
+        "@type": "Organization",
+        "name": "Mimos Shop Brasil"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Mimos Shop Brasil",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://mimosshopbrasil.com/img/logo.png"
+        }
+      }
+    }
+    </script>
   <?php else: ?>
     <!-- SEO Meta Tags para a Listagem Geral do Blog -->
-    <title>Blog Mimos Shop Brasil – Dicas de Ofertas e Eletrônicos</title>
+    <title>Blog – Mimos Shop Brasil | Dicas de Ofertas e Eletrônicos</title>
     <meta name="description" content="Leia as melhores dicas, comparativos e guias de compra de celulares, eletrônicos e utilidades no blog do Mimos Shop Brasil.">
-    <meta property="og:title" content="Blog Mimos Shop Brasil – Dicas de Ofertas e Eletrônicos">
+    <link rel="canonical" href="https://mimosshopbrasil.com/blog/">
+    <meta property="og:title" content="Blog – Mimos Shop Brasil | Dicas de Ofertas e Eletrônicos">
     <meta property="og:description" content="Leia as melhores dicas, comparativos e guias de compra de celulares, eletrônicos e utilidades no blog do Mimos Shop Brasil.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mimosshopbrasil.com/blog/">
+    <meta property="og:site_name" content="Mimos Shop Brasil">
   <?php endif; ?>
   
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="css/style.css">
-  
-  <style>
-    /* Estilos dedicados para a página do blog */
-    .blog-container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 1.5rem;
-      min-height: calc(100vh - 450px);
-    }
-    
-    /* Layout de Grade de duas colunas (Principal e Barra Lateral) */
-    .blog-layout {
-      display: grid;
-      grid-template-columns: 2.5fr 1fr;
-      gap: 2.5rem;
-    }
-    @media (max-width: 992px) {
-      .blog-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-    
-    /* Artigo em Destaque */
-    .featured-box {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      margin-bottom: 3rem;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      text-decoration: none;
-      color: var(--text);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .featured-box:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-hover);
-      border-color: var(--brand);
-    }
-    .featured-img-wrap {
-      width: 100%;
-      aspect-ratio: 21/9;
-      background: #F1F5F9;
-      overflow: hidden;
-    }
-    .featured-img-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .featured-content {
-      padding: 2rem;
-    }
-    .featured-badge {
-      display: inline-block;
-      background: #EF4444;
-      color: white;
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 0.25rem 0.75rem;
-      border-radius: 99px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 1rem;
-    }
-    .featured-title {
-      font-size: 1.8rem;
-      font-weight: 800;
-      line-height: 1.3;
-      margin-bottom: 0.75rem;
-      letter-spacing: -0.5px;
-    }
-    .featured-desc {
-      font-size: 1rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-      margin-bottom: 1.25rem;
-    }
-    .featured-link {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--brand);
-    }
-    
-    /* Seção de Últimos Artigos */
-    .section-title {
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: var(--text);
-      border-bottom: 2px solid var(--brand);
-      padding-bottom: 0.5rem;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    /* Grade de cards do blog */
-    .blog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-    .blog-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: all 0.2s ease-in-out;
-      text-decoration: none;
-      color: var(--text);
-    }
-    .blog-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-hover);
-      border-color: var(--brand);
-    }
-    .blog-card-img {
-      aspect-ratio: 16/10;
-      background: #F1F5F9;
-      overflow: hidden;
-    }
-    .blog-card-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .blog-card-body {
-      padding: 1.25rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .blog-card-date {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
-    .blog-card-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      line-height: 1.4;
-      margin-bottom: 0.5rem;
-      color: var(--text);
-    }
-    .blog-card-excerpt {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-      margin-bottom: 1rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .blog-card-link {
-      margin-top: auto;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--brand);
-    }
-
-    /* Barra Lateral (Widgets) */
-    .blog-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: 2.5rem;
-    }
-    
-    .widget {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      box-shadow: var(--shadow);
-    }
-    .widget-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 1.25rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    /* Lista de Categorias */
-    .widget-categories {
-      display: flex;
-      flex-direction: column;
-      gap: 0.50rem;
-    }
-    .widget-categories a {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--text);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      padding: 0.5rem 0.75rem;
-      border-radius: var(--radius-sm);
-      transition: background 0.15s, color 0.15s;
-    }
-    .widget-categories a:hover {
-      background: #F1F5F9;
-      color: var(--brand);
-    }
-    .widget-categories a span {
-      background: #E2E8F0;
-      font-size: 0.75rem;
-      padding: 0.15rem 0.5rem;
-      border-radius: 99px;
-      color: var(--text-muted);
-    }
-    
-    /* Lista de Artigos Populares */
-    .widget-popular {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .widget-popular-item {
-      display: flex;
-      gap: 0.75rem;
-      text-decoration: none;
-      color: var(--text);
-    }
-    .widget-popular-item:hover .popular-title {
-      color: var(--brand);
-    }
-    .widget-popular-img {
-      width: 64px;
-      height: 64px;
-      border-radius: 6px;
-      overflow: hidden;
-      flex-shrink: 0;
-      background: #F1F5F9;
-    }
-    .widget-popular-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .popular-title {
-      font-size: 0.88rem;
-      font-weight: 700;
-      line-height: 1.35;
-      color: var(--text);
-      transition: color 0.15s;
-    }
-    .popular-date {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      margin-top: 0.25rem;
-      display: block;
-    }
-    
-    /* Estilos do Artigo Completo */
-    .post-wrap {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 2.5rem;
-      box-shadow: var(--shadow);
-    }
-    @media (max-width: 768px) {
-      .post-wrap {
-        padding: 1.5rem;
-      }
-    }
-    .post-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.88rem;
-      margin-bottom: 1.5rem;
-      transition: color 0.15s;
-    }
-    .post-back:hover {
-      color: var(--brand);
-    }
-    .post-date {
-      font-size: 0.82rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
-      margin-bottom: 0.75rem;
-    }
-    .post-title {
-      font-size: 2.4rem;
-      font-weight: 800;
-      line-height: 1.25;
-      margin-bottom: 1.5rem;
-      color: var(--text);
-      letter-spacing: -0.8px;
-    }
-    .post-banner {
-      width: 100%;
-      max-height: 480px;
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      margin-bottom: 2rem;
-      background: #F1F5F9;
-    }
-    .post-banner img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .post-content {
-      font-size: 1.05rem;
-      line-height: 1.8;
-      color: #334155;
-    }
-    .post-content p { margin-bottom: 1.5rem; }
-    .post-content h2, .post-content h3 {
-      color: var(--text);
-      margin-top: 2rem;
-      margin-bottom: 1rem;
-      font-weight: 700;
-    }
-    
-    .post-not-found {
-      text-align: center;
-      padding: 5rem 2rem;
-    }
-  </style>
 </head>
 <body>
   <?php 
-    // Inclui o cabeçalho global localizado na pasta raiz usando caminho absoluto
+    // Inclui o cabeçalho global com navegação dinâmica
     include __DIR__ . '/../header.php'; 
   ?>
   
+  <?php if ($slug !== null && $artigo !== null): ?>
+    <!-- Barra de progresso de leitura animada (avança conforme o scroll) -->
+    <div class="reading-progress-bar" id="reading-progress"></div>
+  <?php endif; ?>
+  
   <div class="blog-container">
     <?php if ($slug !== null): ?>
-      <!-- SEÇÃO: LEITURA DE ARTIGO INDIVIDUAL -->
+      <!-- ================================================ -->
+      <!-- SEÇÃO: LEITURA DE ARTIGO INDIVIDUAL (REDESIGN)   -->
+      <!-- ================================================ -->
       <?php if ($artigo !== null): ?>
-        <article class="post-wrap">
-          <!-- Link para voltar ao feed de notícias do blog -->
-          <a href="blog/" class="post-back">← Voltar para o Blog</a>
+        
+        <!-- Breadcrumbs de navegação hierárquica para SEO e usabilidade -->
+        <nav class="blog-breadcrumbs" aria-label="Breadcrumb">
+          <a href="index.php">Home</a>
+          <span class="separator">›</span>
+          <a href="blog/">Blog</a>
+          <span class="separator">›</span>
+          <!-- Usamos uma alternativa segura de corte de string para compatibilidade caso a extensão mbstring não esteja ativa -->
+          <span class="current"><?php 
+            $title_raw = $artigo['titulo'];
+            echo htmlspecialchars(strlen($title_raw) > 50 ? substr($title_raw, 0, 47) . '...' : $title_raw); 
+          ?></span>
+        </nav>
+        
+        <article class="blog-post-wrap">
+          <!-- Metadados da data de publicação e tempo estimado de leitura -->
+          <div class="blog-post-date">
+            📅 Publicado em <?php echo date('d \d\e F \d\e Y', strtotime($artigo['created_at'])); ?>
+            <span class="blog-post-reading-badge">
+              ⏱ <?php echo calc_reading_time($artigo['conteudo'] ?? ''); ?> min de leitura
+            </span>
+          </div>
           
-          <!-- Metadados da data de criação -->
-          <div class="post-date">Publicado em <?php echo date('d \d\e F \d\e Y', strtotime($artigo['created_at'])); ?></div>
+          <!-- Título principal do artigo (H1 único da página) -->
+          <h1 class="blog-post-title"><?php echo htmlspecialchars($artigo['titulo']); ?></h1>
           
-          <!-- Título principal do artigo -->
-          <h1 class="post-title"><?php echo htmlspecialchars($artigo['titulo']); ?></h1>
-          
-          <!-- Banner ilustrativo do artigo se disponível -->
+          <!-- Banner ilustrativo do artigo com lazy loading -->
           <?php if (!empty($artigo['imagem_url'])): ?>
-            <div class="post-banner">
-              <img src="<?php echo htmlspecialchars($artigo['imagem_url']); ?>" alt="<?php echo htmlspecialchars($artigo['titulo']); ?>">
+            <div class="blog-post-banner">
+              <img src="<?php echo htmlspecialchars($artigo['imagem_url']); ?>" alt="<?php echo htmlspecialchars($artigo['titulo']); ?>" loading="lazy">
             </div>
           <?php endif; ?>
           
-          <!-- Conteúdo HTML do artigo carregado do banco de dados -->
-          <div class="post-content">
+          <!-- Conteúdo HTML do artigo com sanitização de segurança -->
+          <div class="blog-post-content">
             <?php 
-              // Exibe o conteúdo permitindo HTML básico cadastrado pelo administrador
-              echo $artigo['conteudo']; 
+              // Permite apenas tags HTML seguras para prevenir XSS
+              $allowed_tags = '<p><br><h1><h2><h3><h4><h5><h6><strong><em><b><i><u><a><ul><ol><li><img><blockquote><table><tr><td><th><thead><tbody><div><span><hr><pre><code>';
+              echo strip_tags($artigo['conteudo'], $allowed_tags); 
             ?>
           </div>
+          
+          <!-- Barra de compartilhamento social com botões estilizados -->
+          <div class="blog-share">
+            <span class="blog-share-label">Compartilhar:</span>
+            <?php 
+              // Monta as URLs de compartilhamento para cada rede social
+              $share_url = 'https://mimosshopbrasil.com/blog/' . urlencode($artigo['slug']);
+              $share_title = urlencode($artigo['titulo']); 
+            ?>
+            <a href="https://api.whatsapp.com/send?text=<?php echo $share_title . '%20' . urlencode($share_url); ?>" target="_blank" rel="noopener" class="blog-share-btn whatsapp" title="Compartilhar no WhatsApp">
+              📱 WhatsApp
+            </a>
+            <a href="https://twitter.com/intent/tweet?url=<?php echo urlencode($share_url); ?>&text=<?php echo $share_title; ?>" target="_blank" rel="noopener" class="blog-share-btn twitter" title="Compartilhar no Twitter">
+              🐦 Twitter
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($share_url); ?>" target="_blank" rel="noopener" class="blog-share-btn facebook" title="Compartilhar no Facebook">
+              📘 Facebook
+            </a>
+            <button class="blog-share-btn copy" onclick="navigator.clipboard.writeText('<?php echo $share_url; ?>').then(()=>{this.textContent='✓ Copiado!'; setTimeout(()=>{this.textContent='🔗 Copiar Link'},2000)})" title="Copiar link do artigo">
+              🔗 Copiar Link
+            </button>
+          </div>
+          
+          <!-- Seção de artigos relacionados para manter o usuário no site -->
+          <?php if (!empty($related_posts)): ?>
+            <div class="blog-related">
+              <h3 class="blog-related-title">📖 Leia também</h3>
+              <div class="blog-related-grid">
+                <?php foreach ($related_posts as $rel): ?>
+                  <a href="blog/<?php echo urlencode($rel['slug']); ?>" class="blog-card">
+                    <div class="blog-card-img">
+                      <?php if (!empty($rel['imagem_url'])): ?>
+                        <img src="<?php echo htmlspecialchars($rel['imagem_url']); ?>" alt="<?php echo htmlspecialchars($rel['titulo']); ?>" loading="lazy">
+                      <?php else: ?>
+                        <div class="img-placeholder">📝</div>
+                      <?php endif; ?>
+                    </div>
+                    <div class="blog-card-body">
+                      <span class="blog-card-date"><?php echo date('d/m/Y', strtotime($rel['created_at'])); ?></span>
+                      <h4 class="blog-card-title"><?php echo htmlspecialchars($rel['titulo']); ?></h4>
+                      <span class="blog-card-link">Ler artigo →</span>
+                    </div>
+                  </a>
+                <?php endforeach; ?>
+              </div>
+            </div>
+          <?php endif; ?>
+          
         </article>
       <?php else: ?>
-        <!-- Artigo não localizado -->
-        <div class="post-not-found">
+        <!-- Artigo não localizado: mensagem amigável com link de retorno -->
+        <div class="blog-not-found">
           <h2>Artigo não encontrado</h2>
           <p>O artigo que você está procurando não existe ou foi removido.</p>
-          <a href="blog/" class="btn-buy btn-amazon" style="display:inline-block; width:auto; margin-top:1.5rem; padding:0.75rem 2rem;">Ir para o Blog</a>
+          <a href="blog/" class="btn btn-white" style="background: var(--brand); color: white; display: inline-flex;">Ir para o Blog</a>
         </div>
       <?php endif; ?>
       
     <?php else: ?>
-      <!-- SEÇÃO: LISTAGEM DE ARTIGOS (FEED DO BLOG ESTRUTURADO) -->
+      <!-- ================================================ -->
+      <!-- SEÇÃO: LISTAGEM DE ARTIGOS — FEED DO BLOG        -->
+      <!-- ================================================ -->
       <div class="blog-layout">
         
-        <!-- Coluna Principal (Destaque e Últimos Artigos) -->
+        <!-- Coluna Principal (Destaque + Grid de Artigos + Paginação) -->
         <main class="blog-main">
           
-          <!-- Artigo em Destaque Principal -->
+          <!-- Hero de Destaque com Gradiente Overlay sobre a imagem -->
           <?php if ($featured_post !== null): ?>
-            <h2 class="section-title">⭐ Destaque</h2>
-            <a href="blog/<?php echo urlencode($featured_post['slug']); ?>" class="featured-box">
-              <div class="featured-img-wrap">
-                <?php if (!empty($featured_post['imagem_url'])): ?>
-                  <img src="<?php echo htmlspecialchars($featured_post['imagem_url']); ?>" alt="<?php echo htmlspecialchars($featured_post['titulo']); ?>">
-                <?php endif; ?>
-              </div>
-              <div class="featured-content">
-                <span class="featured-badge">Artigo em Destaque</span>
-                <h3 class="featured-title"><?php echo htmlspecialchars($featured_post['titulo']); ?></h3>
-                <p class="featured-desc"><?php echo htmlspecialchars($featured_post['resumo'] ?? ''); ?></p>
-                <span class="featured-link">Ler artigo completo →</span>
+            <a href="blog/<?php echo urlencode($featured_post['slug']); ?>" class="blog-featured-hero">
+              <!-- Imagem de fundo do hero -->
+              <?php if (!empty($featured_post['imagem_url'])): ?>
+                <img src="<?php echo htmlspecialchars($featured_post['imagem_url']); ?>" alt="<?php echo htmlspecialchars($featured_post['titulo']); ?>" class="hero-bg" loading="lazy">
+              <?php endif; ?>
+              <!-- Overlay gradiente escuro para legibilidade -->
+              <div class="hero-overlay"></div>
+              <!-- Conteúdo de texto sobre o hero -->
+              <div class="hero-text">
+                <div class="hero-meta">
+                  <span class="hero-badge">⭐ Destaque</span>
+                  <span class="hero-reading-time">
+                    ⏱ <?php echo calc_reading_time($featured_post['conteudo'] ?? ''); ?> min de leitura
+                  </span>
+                </div>
+                <h2 class="hero-title"><?php echo htmlspecialchars($featured_post['titulo']); ?></h2>
+                <p class="hero-desc"><?php echo htmlspecialchars($featured_post['resumo'] ?? ''); ?></p>
+                <span class="hero-cta">Ler artigo completo →</span>
               </div>
             </a>
           <?php endif; ?>
           
-          <!-- Seção de Últimos Artigos (Feed) -->
-          <h2 class="section-title">⏰ Últimos Artigos</h2>
-          <?php if (!empty($artigos)): ?>
+          <!-- Título da seção com linha gradiente decorativa -->
+          <h2 class="blog-section-title">📰 Últimos Artigos</h2>
+          
+          <!-- Grid de cards dos artigos com animações staggered -->
+          <?php if (!empty($artigos_paginated)): ?>
             <div class="blog-grid">
-              <?php foreach ($artigos as $art): ?>
+              <?php foreach ($artigos_paginated as $art): ?>
                 <a href="blog/<?php echo urlencode($art['slug']); ?>" class="blog-card">
                   <div class="blog-card-img">
                     <?php if (!empty($art['imagem_url'])): ?>
-                      <img src="<?php echo htmlspecialchars($art['imagem_url']); ?>" alt="<?php echo htmlspecialchars($art['titulo']); ?>">
+                      <img src="<?php echo htmlspecialchars($art['imagem_url']); ?>" alt="<?php echo htmlspecialchars($art['titulo']); ?>" loading="lazy">
                     <?php else: ?>
-                      <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#E2E8F0; font-size:2rem;">📝</div>
+                      <div class="img-placeholder">📝</div>
                     <?php endif; ?>
                   </div>
                   <div class="blog-card-body">
-                    <span class="blog-card-date"><?php echo date('d/m/Y', strtotime($art['created_at'])); ?></span>
+                    <!-- Metadados: data + tempo de leitura -->
+                    <div class="blog-card-meta">
+                      <span class="blog-card-date"><?php echo date('d/m/Y', strtotime($art['created_at'])); ?></span>
+                      <span class="blog-card-reading">⏱ <?php echo calc_reading_time($art['conteudo'] ?? ''); ?> min</span>
+                    </div>
                     <h3 class="blog-card-title"><?php echo htmlspecialchars($art['titulo']); ?></h3>
                     <p class="blog-card-excerpt"><?php echo htmlspecialchars($art['resumo'] ?? ''); ?></p>
                     <span class="blog-card-link">Ler mais →</span>
@@ -529,45 +343,90 @@ if ($slug !== null) {
                 </a>
               <?php endforeach; ?>
             </div>
+            
+            <!-- Paginação server-side com design moderno -->
+            <?php if ($total_pages > 1): ?>
+              <nav class="blog-pagination" aria-label="Paginação do blog">
+                <!-- Botão Anterior -->
+                <?php if ($current_page > 1): ?>
+                  <a href="blog/?page=<?php echo $current_page - 1; ?>" title="Página anterior">← Anterior</a>
+                <?php else: ?>
+                  <span class="disabled">← Anterior</span>
+                <?php endif; ?>
+                
+                <!-- Números das páginas -->
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                  <?php if ($i === $current_page): ?>
+                    <span class="active"><?php echo $i; ?></span>
+                  <?php else: ?>
+                    <a href="blog/?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                  <?php endif; ?>
+                <?php endfor; ?>
+                
+                <!-- Botão Próximo -->
+                <?php if ($current_page < $total_pages): ?>
+                  <a href="blog/?page=<?php echo $current_page + 1; ?>" title="Próxima página">Próxima →</a>
+                <?php else: ?>
+                  <span class="disabled">Próxima →</span>
+                <?php endif; ?>
+              </nav>
+            <?php endif; ?>
+            
           <?php else: ?>
-            <p class="text-muted">Nenhum outro artigo publicado no momento.</p>
+            <p class="text-muted" style="text-align:center; padding: 3rem 0;">Nenhum artigo publicado no momento. Volte em breve!</p>
           <?php endif; ?>
           
         </main>
         
-        <!-- Coluna Lateral (Widget de Categorias e Artigos Populares) -->
+        <!-- Coluna Lateral (Sidebar com Widgets Dinâmicos) -->
         <aside class="blog-sidebar">
           
-          <!-- Widget de Categorias -->
-          <div class="widget">
-            <h3 class="widget-title">Categorias</h3>
-            <div class="widget-categories">
-              <!-- As categorias direcionam o usuário para a página de produtos catálogo correspondente -->
-              <a href="produtos.php?category=1">Tecnologia <span>→</span></a>
-              <a href="produtos.php?category=2">Casa <span>→</span></a>
-              <a href="produtos.php?category=3">Ferramentas <span>→</span></a>
-              <a href="produtos.php?category=4">Beleza <span>→</span></a>
-              <a href="produtos.php?category=5">Esporte <span>→</span></a>
+          <!-- Widget de Busca no Blog -->
+          <div class="blog-widget">
+            <h3 class="blog-widget-title">🔍 Buscar</h3>
+            <form action="produtos.php" method="GET" class="blog-search-form">
+              <input type="text" name="search" placeholder="Buscar no site..." required>
+              <button type="submit" aria-label="Buscar">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              </button>
+            </form>
+          </div>
+          
+          <!-- Widget de Categorias Dinâmicas (carregadas do Supabase) -->
+          <div class="blog-widget">
+            <h3 class="blog-widget-title">📂 Categorias</h3>
+            <div class="blog-categories-list">
+              <?php if (!empty($blog_categorias)): ?>
+                <?php foreach ($blog_categorias as $cat): ?>
+                  <!-- Link dinâmico para filtrar produtos pela categoria no catálogo -->
+                  <a href="produtos.php?category=<?php echo $cat['id']; ?>">
+                    <?php echo htmlspecialchars($cat['icone'] ?? '📦') . ' ' . htmlspecialchars($cat['nome']); ?>
+                    <span class="cat-arrow">→</span>
+                  </a>
+                <?php endforeach; ?>
+              <?php else: ?>
+                <a href="produtos.php">Ver todos os produtos <span class="cat-arrow">→</span></a>
+              <?php endif; ?>
             </div>
           </div>
           
           <!-- Widget de Artigos Populares -->
           <?php if (!empty($popular_posts)): ?>
-            <div class="widget">
-              <h3 class="widget-title">Mais Populares</h3>
-              <div class="widget-popular">
+            <div class="blog-widget">
+              <h3 class="blog-widget-title">🔥 Mais Populares</h3>
+              <div class="blog-popular-list">
                 <?php foreach ($popular_posts as $pop): ?>
-                  <a href="blog/<?php echo urlencode($pop['slug']); ?>" class="widget-popular-item">
-                    <div class="widget-popular-img">
+                  <a href="blog/<?php echo urlencode($pop['slug']); ?>" class="blog-popular-item">
+                    <div class="blog-popular-thumb">
                       <?php if (!empty($pop['imagem_url'])): ?>
-                        <img src="<?php echo htmlspecialchars($pop['imagem_url']); ?>" alt="">
+                        <img src="<?php echo htmlspecialchars($pop['imagem_url']); ?>" alt="<?php echo htmlspecialchars($pop['titulo']); ?>" loading="lazy">
                       <?php else: ?>
-                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#E2E8F0; font-size:1.2rem;">📝</div>
+                        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📝</div>
                       <?php endif; ?>
                     </div>
-                    <div>
-                      <h4 class="popular-title"><?php echo htmlspecialchars($pop['titulo']); ?></h4>
-                      <span class="popular-date"><?php echo date('d/m/Y', strtotime($pop['created_at'])); ?></span>
+                    <div class="blog-popular-info">
+                      <h4 class="pop-title"><?php echo htmlspecialchars($pop['titulo']); ?></h4>
+                      <span class="pop-date"><?php echo date('d/m/Y', strtotime($pop['created_at'])); ?></span>
                     </div>
                   </a>
                 <?php endforeach; ?>
@@ -582,9 +441,31 @@ if ($slug !== null) {
   </div>
   
   <?php 
-    // Inclui o rodapé global localizado na pasta raiz usando caminho absoluto
+    // Inclui o rodapé global com categorias do Supabase
     include __DIR__ . '/../footer.php'; 
   ?>
+  
+  <!-- Script principal do site -->
   <script src="js/main.js"></script>
+  
+  <?php if ($slug !== null && $artigo !== null): ?>
+  <!-- Script da barra de progresso de leitura: avança conforme o scroll do artigo -->
+  <script>
+    // Atualiza a largura da barra de progresso conforme o usuário rola a página
+    (function() {
+      const progressBar = document.getElementById('reading-progress');
+      if (!progressBar) return;
+      
+      window.addEventListener('scroll', function() {
+        // Calcula a porcentagem de scroll da página inteira
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        // Atualiza a largura da barra com o percentual calculado
+        progressBar.style.width = Math.min(100, progress) + '%';
+      });
+    })();
+  </script>
+  <?php endif; ?>
 </body>
 </html>

@@ -99,7 +99,10 @@ if ($action === 'login') {
         exit;
     }
 
-    // Token validado com sucesso pelo Supabase — salva a sessão de admin autenticado
+    // Token validado com sucesso pelo Supabase — regenera o ID da sessão para prevenir session fixation
+    session_regenerate_id(true);
+    
+    // Salva a sessão de admin autenticado com dados confirmados pelo Supabase
     $_SESSION['admin_logged_in'] = true;
     $_SESSION['admin_email'] = htmlspecialchars($supabaseUser['email']); // Usa o email confirmado pelo Supabase
     $_SESSION['admin_token'] = $data['access_token'];

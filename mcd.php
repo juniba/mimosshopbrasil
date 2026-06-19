@@ -16,15 +16,17 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Administrativo – TechDeal</title>
+  <!-- Título atualizado para a marca Mimos Shop Brasil -->
+  <title>Login Administrativo – Mimos Shop Brasil</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="login-page">
 
   <!-- Caixa de Login (Card com efeito Glassmorphism) -->
   <div class="login-box">
+    <!-- Logo atualizado para Mimos Shop Brasil -->
     <div class="login-logo">
-      Tech<span>Deal</span>
+      Mimos<span>Shop</span>
     </div>
     <h2>Painel do Admin</h2>
     <p>Insira seu e-mail e senha cadastrados para acessar o gerenciamento.</p>

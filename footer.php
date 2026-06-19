@@ -1,6 +1,6 @@
 <?php
 /*
-  footer.php: Rodapé dinâmico do site TechDeal.
+  footer.php: Rodapé dinâmico do site Mimos Shop Brasil.
   Carrega as categorias do Supabase para exibir links dinâmicos no rodapé,
   garantindo que novas categorias adicionadas via painel apareçam automaticamente.
 */
@@ -50,24 +50,24 @@ $footer_categorias = json_decode($footer_response, true);
       </div>
       <div class="footer-col">
         <h4>Lojas</h4>
-        <a href="#">Ofertas Amazon</a>
-        <a href="#">Ofertas Mercado Livre</a>
-        <a href="#">Comparar Preços</a>
-        <a href="#">Cupons</a>
-        <a href="#">Prime Day</a>
+        <!-- Links funcionais direcionando para filtros de loja no catálogo -->
+        <a href="produtos.php?store=1">Ofertas Amazon</a>
+        <a href="produtos.php?store=2">Ofertas Mercado Livre</a>
+        <a href="index.php#comparar">Comparar Preços</a>
+        <a href="index.php#ofertas">Cupons</a>
       </div>
       <div class="footer-col">
         <h4>Sobre</h4>
-        <a href="#">Como funciona</a>
-        <a href="#">Política de privacidade</a>
-        <a href="#">Termos de uso</a>
-        <a href="#">Contato</a>
-        <a href="#">Newsletter</a>
+        <!-- Links funcionais para as seções existentes da página -->
+        <a href="index.php#sobre">Como funciona</a>
+        <a href="blog/">Blog</a>
+        <a href="links.php">Links de Desconto</a>
+        <a href="index.php#newsletter">Newsletter</a>
       </div>
     </div>
     <div class="footer-bottom">
       <!-- Direitos autorais atualizados para Mimos Shop Brasil -->
-      <span>© 2025 Mimos Shop Brasil. Todos os direitos reservados.</span>
+      <span>© 2026 Mimos Shop Brasil. Todos os direitos reservados.</span>
       <span>Preços e disponibilidade podem variar. Verifique na loja antes de comprar.</span>
     </div>
   </div>

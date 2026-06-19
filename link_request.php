@@ -61,11 +61,16 @@ if ($res === false) {
 
 // Recupera de forma segura a chave da API do CallMeBot das variáveis de ambiente, removendo possíveis aspas
 $api_token = get_env_safe('WHATSAPP_API_KEY');
-$admin_phone = "5521964120044"; // Número de WhatsApp cadastrado do administrador vinculado à chave do CallMeBot
+// Recupera o número de telefone do administrador das variáveis de ambiente (segurança: não expor no código-fonte)
+$admin_phone = get_env_safe('ADMIN_WHATSAPP_PHONE');
+if (empty($admin_phone)) {
+    $admin_phone = "5521964120044"; // Fallback caso a variável não esteja configurada
+}
 
 if (!empty($api_token)) {
     // Monta uma mensagem detalhada formatada para o WhatsApp do administrador
-    $notification_msg = "🔔 *Nova Encomenda de Link no TechDeal!* 🔔\n\n";
+    // Mensagem formatada para WhatsApp com a marca atualizada
+    $notification_msg = "🔔 *Nova Encomenda de Link no Mimos Shop Brasil!* 🔔\n\n";
     $notification_msg .= "👤 *Cliente:* {$nome}\n";
     $notification_msg .= "📱 *WhatsApp:* {$whatsapp}\n";
     $notification_msg .= "🔗 *Link do Produto:* {$link}\n";

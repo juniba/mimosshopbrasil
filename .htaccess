@@ -1,12 +1,27 @@
 # Ativa o motor de reescrita de URLs do Apache
 RewriteEngine On
 
+# Headers de segurança HTTP para proteger contra ataques comuns
+# Bloqueia embedding em iframes de outros sites (proteção contra clickjacking)
+Header always set X-Frame-Options "SAMEORIGIN"
+# Previne que o navegador interprete MIME types incorretos
+Header always set X-Content-Type-Options "nosniff"
+# Ativa proteção nativa contra XSS no navegador
+Header always set X-XSS-Protection "1; mode=block"
+# Garante que referrer não vaze informações sensíveis
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
 # Impede que a regra de reescrita seja aplicada se o arquivo físico de fato existir
 RewriteCond %{REQUEST_FILENAME} !-f
 
 # Impede que a regra de reescrita seja aplicada se o diretório físico exato de fato existir
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Regra única: Mapeia '/blog/qualquer-slug' para '/blog/index.php?slug=qualquer-slug'
+# Regra: Mapeia '/blog/qualquer-slug' para '/blog/index.php?slug=qualquer-slug'
 # Isso possibilita links amigáveis e estruturados dentro do blog
 RewriteRule ^blog/([a-zA-Z0-9-_]+)/?$ blog/index.php?slug=$1 [L,QSA]
+
+# Regra: Mapeia '/sitemap.xml' para o script PHP dinâmico sitemap.php
+# Permite que crawlers acessem o sitemap via URL padrão
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+

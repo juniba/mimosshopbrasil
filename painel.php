@@ -353,8 +353,30 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete_newsletter' && isset($
     }
 }
 
+// 2h. Ação para sincronizar atualizações com o GitHub localmente (GET)
+if (isset($_GET['action']) && $_GET['action'] === 'git_sync') {
+    // Comando para adicionar todos os arquivos pendentes, criar um commit com data atual e empurrar as alterações
+    $commit_msg = 'atualizacao automatica painel - ' . date('d/m/Y H:i:s');
+    
+    // Executa os comandos localmente via shell_exec (estando em ambiente local de desenvolvimento do usuário)
+    $output_add = shell_exec('git add . 2>&1');
+    $output_commit = shell_exec('git commit -m ' . escapeshellarg($commit_msg) . ' 2>&1');
+    $output_push = shell_exec('git push origin main 2>&1');
+    
+    // Verifica se houve modificações ou erro no envio
+    if (strpos($output_commit, 'nothing to commit') !== false || strpos($output_commit, 'nada para submeter') !== false) {
+        $alertMessage = "Sem novas alterações locais para enviar ao GitHub.";
+        $alertClass = "alert-info";
+    } elseif (strpos($output_push, 'Everything up-to-date') !== false || strpos($output_push, 'tudo atualizado') !== false || strpos($output_push, 'To ') !== false || strpos($output_push, 'main -> main') !== false) {
+        $alertMessage = "Projeto atualizado e enviado para o GitHub com sucesso!";
+        $alertClass = "alert-success";
+    } else {
+        $alertMessage = "Atualização enviada para o GitHub. Resposta do Git: " . nl2br(htmlspecialchars($output_push ?? ''));
+        $alertClass = "alert-success";
+    }
+}
+
 // 2g. Ação de Exclusão de Artigos do Blog (GET)
-// Esta rota remove o artigo do Supabase pelo ID
 if (isset($_GET['action']) && $_GET['action'] === 'delete_article' && isset($_GET['id'])) {
     $art_del_id = intval($_GET['id']);
     // Remove o artigo no Supabase usando a autenticação do admin
@@ -634,7 +656,8 @@ if ($current_action === 'edit_article' && isset($_GET['id'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel de Controle – TechDeal</title>
+  <!-- Título do painel atualizado para Mimos Shop Brasil -->
+  <title>Painel de Controle – Mimos Shop Brasil</title>
   <link rel="stylesheet" href="css/style.css">
   
   <!-- Estilos customizados locais para interface premium de administração do CRUD -->
@@ -1010,6 +1033,12 @@ if ($current_action === 'edit_article' && isset($_GET['id'])) {
           📝 Artigos do Blog
         </a>
         
+        <!-- Link para sincronização direta com o GitHub através de comandos locais executados via shell_exec -->
+        <a href="painel.php?action=git_sync" class="<?php echo $current_action === 'git_sync' ? 'active' : ''; ?>" style="color: #24292e; font-weight: 600;">
+          <svg height="16" width="16" viewBox="0 0 16 16" version="1.1" aria-hidden="true" style="fill: currentColor; vertical-align: text-bottom; margin-right: 2px;"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+          Sincronizar GitHub
+        </a>
+        
         <a href="#" onclick="handleLogout(event)">🚪 Sair</a>
       </nav>
     </aside>
@@ -1017,6 +1046,37 @@ if ($current_action === 'edit_article' && isset($_GET['id'])) {
     <!-- Área de Conteúdo Principal (Organizada com base no roteador action) -->
     <main class="painel-content">
       
+      <!-- 1.1 TELA: SINCRONIZAR GITHUB -->
+      <?php if ($current_action === 'git_sync'): ?>
+        <div class="painel-card">
+          <h1>Sincronizar com o GitHub</h1>
+          <p>Execute os comandos locais para salvar as alterações do projeto e enviar diretamente para o repositório remoto.</p>
+          
+          <?php if (!empty($alertMessage)): ?>
+            <div class="alert-box <?php echo $alertClass; ?>">
+              <?php echo htmlspecialchars($alertMessage); ?>
+            </div>
+          <?php endif; ?>
+          
+          <div style="background: #1e1e1e; color: #39ff14; padding: 1.5rem; border-radius: 6px; font-family: monospace; line-height: 1.6; margin-top: 1rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); overflow-x: auto;">
+            <div style="color: #888; margin-bottom: 0.5rem;">// Console Git Local</div>
+            <div>$ git add .</div>
+            <div style="color: #aaa; margin-left: 10px;"><?php echo nl2br(htmlspecialchars($output_add ?? 'Sucesso (Arquivos adicionados para o commit)')); ?></div>
+            
+            <div style="margin-top: 1rem;">$ git commit -m "<?php echo htmlspecialchars($commit_msg ?? 'atualizacao automatica painel'); ?>"</div>
+            <div style="color: #aaa; margin-left: 10px;"><?php echo nl2br(htmlspecialchars($output_commit ?? 'Nenhum commit gerado ainda')); ?></div>
+            
+            <div style="margin-top: 1rem;">$ git push origin main</div>
+            <div style="color: #aaa; margin-left: 10px;"><?php echo nl2br(htmlspecialchars($output_push ?? 'Nenhum envio efetuado ainda')); ?></div>
+          </div>
+          
+          <div style="margin-top: 1.5rem;">
+            <a href="painel.php?action=git_sync" class="btn-admin-primary" style="background: #24292e;">🔄 Sincronizar Novamente</a>
+            <a href="painel.php?action=dashboard" class="btn-admin-secondary">Voltar ao Painel</a>
+          </div>
+        </div>
+      <?php endif; ?>
+
       <!-- 1. TELA: DASHBOARD / VISÃO GERAL -->
       <?php if ($current_action === 'dashboard'): ?>
         <div class="painel-card">

@@ -17,12 +17,15 @@ require_once 'config.php';
   <meta name="keywords" content="Mimos Shop Brasil, comparar preços, ofertas, descontos, eletrônicos, presentes, utilidades, Amazon, Mercado Livre">
   <meta name="robots" content="index, follow">
   
-  <!-- Open Graph Meta Tags (Para compartilhamento otimizado em redes sociais - Mimos Shop Brasil) -->
+  <!-- Canonical URL para evitar duplicidade de conteúdo no Google -->
+  <link rel="canonical" href="https://mimosshopbrasil.com/">
+  
+  <!-- Open Graph Meta Tags com URLs absolutas para compartilhamento otimizado em redes sociais -->
   <meta property="og:title" content="Mimos Shop Brasil – Melhores Ofertas e Descontos do Dia">
   <meta property="og:description" content="Compare preços das principais lojas, encontre descontos exclusivos e economize todos os dias com o comparador Mimos Shop Brasil.">
-  <meta property="og:image" content="og_banner.png">
+  <meta property="og:image" content="https://mimosshopbrasil.com/og_banner.png">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="index.php">
+  <meta property="og:url" content="https://mimosshopbrasil.com/">
   <meta property="og:site_name" content="Mimos Shop Brasil">
   
   <!-- Favicon para exibição correta na aba do navegador -->
