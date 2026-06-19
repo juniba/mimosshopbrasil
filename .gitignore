@@ -2,3 +2,6 @@
 .env
 cache/*
 !cache/.gitkeep
+
+# Exclui a pasta de scripts temporários e rascunhos (scratch/)
+scratch/

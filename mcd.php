@@ -1,6 +1,6 @@
 <?php
 /*
-  login.php: Interface visual para autenticação de administradores.
+  mcd.php: Interface visual para autenticação de administradores (antigo login.php).
   Carrega o SDK do Supabase para validação e define a sessão do backend.
 */
 require_once 'config.php';

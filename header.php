@@ -24,6 +24,8 @@ $isAdminLogged = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_
       <a href="produtos.php" onclick="toggleMenu(false)">Produtos</a>
       <!-- Link para a página de encomendas de links finalizadas -->
       <a href="links.php" onclick="toggleMenu(false)">Links</a>
+      <!-- Link para a nova página pública de Blog (pasta blog/) -->
+      <a href="blog/" onclick="toggleMenu(false)">Blog</a>
       <a href="index.php#comparar" onclick="toggleMenu(false)">Comparar</a>
       <a href="index.php#sobre" onclick="toggleMenu(false)">Sobre</a>
       
@@ -34,14 +36,14 @@ $isAdminLogged = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_
           $header_news_count = 0;
           $header_req_count = 0;
           
-          // Busca IDs da newsletter para contagem rápida
-          $res_news = supabase_admin_request('GET', '/rest/v1/newsletter?select=id', null, true);
+          // Busca IDs da newsletter para contagem rápida filtrando apenas pelos não lidos (lido=eq.false)
+          $res_news = supabase_admin_request('GET', '/rest/v1/newsletter?select=id&lido=eq.false', null, true);
           if (is_array($res_news)) {
               $header_news_count = count($res_news);
           }
           
-          // Busca IDs dos pedidos de links para contagem rápida
-          $res_req = supabase_admin_request('GET', '/rest/v1/pedidosLink?select=id', null, true);
+          // Busca IDs dos pedidos de links para contagem rápida filtrando apenas pelos não lidos (lido=eq.false)
+          $res_req = supabase_admin_request('GET', '/rest/v1/pedidosLink?select=id&lido=eq.false', null, true);
           if (is_array($res_req)) {
               $header_req_count = count($res_req);
           }

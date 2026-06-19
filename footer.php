@@ -27,9 +27,9 @@ $footer_categorias = json_decode($footer_response, true);
   <div class="footer-inner">
     <div class="footer-grid">
       <div>
-        <!-- Logo gráfica do Mimos Shop Brasil no rodapé -->
+        <!-- Logo gráfica do Mimos Shop Brasil no rodapé usando a versão clara (logo-light.png) para se destacar no fundo escuro -->
         <div class="footer-logo">
-          <img src="img/logo.png" alt="Mimos Shop Brasil" style="height: 50px; width: auto; object-fit: contain;">
+          <img src="img/logo-light.png" alt="Mimos Shop Brasil" style="height: 50px; width: auto; object-fit: contain;">
         </div>
         <p class="footer-desc">Comparador de preços de eletrônicos e utilidades. Encontre as melhores ofertas na Amazon e Mercado Livre todos os dias.</p>
         <div class="affiliate-notice" style="margin-top:1rem;">

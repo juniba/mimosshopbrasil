@@ -9,9 +9,9 @@ require_once 'config.php';
 // Carrega o helper do Cloudinary para lidar com conversão WebP e uploads de imagens
 require_once 'cloudinary_helper.php';
 
-// Proteção do Painel: Se não houver sessão ativa de admin, barra o acesso
+// Proteção do Painel: Se não houver sessão ativa de admin, barra o acesso e redireciona para mcd.php (antigo login.php)
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: login.php');
+    header('Location: mcd.php');
     exit;
 }
 
@@ -215,6 +215,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $alertClass = "alert-error";
             }
         }
+        
+        // === AUXILIAR: GERAÇÃO DE SLUG E CRUD DE ARTIGOS DO BLOG (INSERT / UPDATE) ===
+        // Função auxiliar para higienizar e transformar o título em um slug amigável para URLs
+        if (!function_exists('generate_slug')) {
+            function generate_slug($text) {
+                // Substitui caracteres acentuados ou especiais por hífens
+                $text = preg_replace('~[^\pL\d]+~u', '-', $text);
+                // Translitera caracteres não-ASCII
+                $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+                // Remove caracteres indesejados
+                $text = preg_replace('~[^-\w]+~', '', $text);
+                $text = trim($text, '-');
+                // Remove hífens duplicados
+                $text = preg_replace('~-+~', '-', $text);
+                $text = strtolower($text);
+                return empty($text) ? 'n-a' : $text;
+            }
+        }
+
+        if ($action === 'insert_article' || $action === 'update_article') {
+            // Sanitiza os campos vindos do formulário
+            $titulo = trim($_POST['titulo']);
+            $resumo = trim($_POST['resumo']);
+            $conteudo = trim($_POST['conteudo']);
+            $publicado = isset($_POST['publicado']) ? true : false;
+            
+            // Define o slug a partir do título (ou slug manual se fornecido)
+            $slug = !empty($_POST['slug']) ? generate_slug($_POST['slug']) : generate_slug($titulo);
+            
+            // Processa o upload da imagem do banner usando o helper do Cloudinary
+            $imagem_url = handle_image_upload_or_url($_FILES['imagem_file'] ?? null, $_POST['imagem_url'] ?? '');
+            
+            // Payload a ser enviado para o Supabase
+            $payload = [
+                'titulo' => $titulo,
+                'slug' => $slug,
+                'resumo' => $resumo,
+                'conteudo' => $conteudo,
+                'imagem_url' => $imagem_url,
+                'publicado' => $publicado
+            ];
+            
+            if ($action === 'insert_article') {
+                // Insere o novo artigo no banco de dados do Supabase
+                $res = supabase_admin_request('POST', '/rest/v1/artigos', $payload, true);
+                if ($res !== false) {
+                    header('Location: painel.php?action=articles&success=art_inserted');
+                    exit;
+                } else {
+                    $alertMessage = "Erro ao cadastrar o artigo do blog no Supabase.";
+                    $alertClass = "alert-error";
+                }
+            } elseif ($action === 'update_article') {
+                // Atualiza o artigo existente no Supabase usando ID do registro
+                $id = intval($_POST['id']);
+                $res = supabase_admin_request('PATCH', '/rest/v1/artigos?id=eq.' . $id, $payload, true);
+                if ($res !== false) {
+                    header('Location: painel.php?action=articles&success=art_updated');
+                    exit;
+                } else {
+                    $alertMessage = "Erro ao atualizar o artigo do blog no Supabase.";
+                    $alertClass = "alert-error";
+                }
+            }
+        }
     }
 }
 
@@ -288,6 +353,48 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete_newsletter' && isset($
     }
 }
 
+// 2g. Ação de Exclusão de Artigos do Blog (GET)
+// Esta rota remove o artigo do Supabase pelo ID
+if (isset($_GET['action']) && $_GET['action'] === 'delete_article' && isset($_GET['id'])) {
+    $art_del_id = intval($_GET['id']);
+    // Remove o artigo no Supabase usando a autenticação do admin
+    $res = supabase_admin_request('DELETE', '/rest/v1/artigos?id=eq.' . $art_del_id, null, true);
+    if ($res !== false) {
+        header('Location: painel.php?action=articles&success=art_deleted');
+        exit;
+    } else {
+        $alertMessage = "Erro ao excluir o artigo do blog no Supabase.";
+        $alertClass = "alert-error";
+    }
+}
+
+// 2f. Ação para marcar todos os registros como lidos (GET)
+// Esta rota atualiza o campo lido para true na tabela correspondente do Supabase
+if (isset($_GET['action']) && $_GET['action'] === 'mark_all_read' && isset($_GET['type'])) {
+    $type = $_GET['type'];
+    if ($type === 'requests') {
+        // Envia requisição PATCH para pedidosLink marcando registros não lidos como lidos
+        $res = supabase_admin_request('PATCH', '/rest/v1/pedidosLink?lido=eq.false', ['lido' => true], true);
+        if ($res !== false) {
+            header('Location: painel.php?action=requests&success=req_marked_read');
+            exit;
+        } else {
+            $alertMessage = "Erro ao marcar os pedidos de link como lidos.";
+            $alertClass = "alert-error";
+        }
+    } elseif ($type === 'newsletter') {
+        // Envia requisição PATCH para newsletter marcando registros não lidos como lidos
+        $res = supabase_admin_request('PATCH', '/rest/v1/newsletter?lido=eq.false', ['lido' => true], true);
+        if ($res !== false) {
+            header('Location: painel.php?action=newsletter_leads&success=news_marked_read');
+            exit;
+        } else {
+            $alertMessage = "Erro ao marcar os leads da newsletter como lidos.";
+            $alertClass = "alert-error";
+        }
+    }
+}
+
 // 3. Captura alertas de sucesso vindos de redirecionamentos anteriores
 if (isset($_GET['success'])) {
     $success_type = $_GET['success'];
@@ -328,6 +435,9 @@ if (isset($_GET['success'])) {
     elseif ($success_type === 'req_deleted') {
         $alertMessage = "Solicitação de link excluída com sucesso!";
         $alertClass = "alert-success";
+    } elseif ($success_type === 'req_marked_read') {
+        $alertMessage = "Todas as solicitações de link foram marcadas como lidas!";
+        $alertClass = "alert-success";
     }
     // Alertas de Newsletter
     elseif ($success_type === 'news_inserted') {
@@ -335,6 +445,20 @@ if (isset($_GET['success'])) {
         $alertClass = "alert-success";
     } elseif ($success_type === 'news_deleted') {
         $alertMessage = "WhatsApp removido da newsletter com sucesso!";
+        $alertClass = "alert-success";
+    } elseif ($success_type === 'news_marked_read') {
+        $alertMessage = "Todos os contatos da newsletter foram marcados como lidos!";
+        $alertClass = "alert-success";
+    }
+    // Alertas de Artigos do Blog
+    elseif ($success_type === 'art_inserted') {
+        $alertMessage = "Artigo do blog cadastrado com sucesso!";
+        $alertClass = "alert-success";
+    } elseif ($success_type === 'art_updated') {
+        $alertMessage = "Artigo do blog atualizado com sucesso!";
+        $alertClass = "alert-success";
+    } elseif ($success_type === 'art_deleted') {
+        $alertMessage = "Artigo do blog removido com sucesso!";
         $alertClass = "alert-success";
     }
 }
@@ -344,16 +468,16 @@ if (isset($_GET['success'])) {
 // Define qual tela administrativa será renderizada na página
 $current_action = $_GET['action'] ?? 'dashboard';
 
-// Busca contagens e listas para os badges de notificação e cards (sempre carregados para uso na sidebar)
+// Busca contagens e listas para os badges de notificação e cards (filtrando apenas pelos não lidos [lido=eq.false] para exibir nos badges da sidebar)
 $newsletter_count = 0;
 $requests_count = 0;
 
-$all_newsletter_count_res = supabase_admin_request('GET', '/rest/v1/newsletter?select=id', null, true);
+$all_newsletter_count_res = supabase_admin_request('GET', '/rest/v1/newsletter?select=id&lido=eq.false', null, true);
 if (is_array($all_newsletter_count_res)) {
     $newsletter_count = count($all_newsletter_count_res);
 }
 
-$all_requests_count_res = supabase_admin_request('GET', '/rest/v1/pedidosLink?select=id', null, true);
+$all_requests_count_res = supabase_admin_request('GET', '/rest/v1/pedidosLink?select=id&lido=eq.false', null, true);
 if (is_array($all_requests_count_res)) {
     $requests_count = count($all_requests_count_res);
 }
@@ -446,10 +570,11 @@ if ($current_action === 'edit_store' && isset($_GET['id'])) {
     }
 }
 
-// Busca estatísticas gerais na dashboard (produtos, categorias e lojas)
+// Busca estatísticas gerais na dashboard (produtos, categorias, lojas e artigos do blog)
 $total_products = 0;
 $total_categories = 0;
 $total_stores = 0;
+$total_articles = 0;
 $featured_count = 0;
 if ($current_action === 'dashboard') {
     // Conta todos os produtos e produtos em destaque
@@ -473,6 +598,34 @@ if ($current_action === 'dashboard') {
     $all_stores = supabase_admin_request('GET', '/rest/v1/store?select=id');
     if (is_array($all_stores)) {
         $total_stores = count($all_stores);
+    }
+    
+    // Conta todos os artigos do blog cadastrados no Supabase
+    $all_articles = supabase_admin_request('GET', '/rest/v1/artigos?select=id');
+    if (is_array($all_articles)) {
+        $total_articles = count($all_articles);
+    }
+}
+
+// Busca lista de artigos do blog do Supabase caso a tela de listagem de artigos esteja ativa
+$articles_list = [];
+if ($current_action === 'articles') {
+    $articles_list = supabase_admin_request('GET', '/rest/v1/artigos?select=*&order=created_at.desc', null, true);
+}
+
+// Busca os dados do artigo específico no Supabase para a tela de edição
+$edit_article = null;
+if ($current_action === 'edit_article' && isset($_GET['id'])) {
+    $edit_art_id = intval($_GET['id']);
+    $res = supabase_admin_request('GET', '/rest/v1/artigos?id=eq.' . $edit_art_id);
+    if (!empty($res)) {
+        $edit_article = $res[0];
+    } else {
+        $alertMessage = "Artigo do blog não localizado para edição.";
+        $alertClass = "alert-error";
+        $current_action = 'articles';
+        // Recarrega a listagem de fallback
+        $articles_list = supabase_admin_request('GET', '/rest/v1/artigos?select=*&order=created_at.desc', null, true);
     }
 }
 ?>
@@ -851,6 +1004,11 @@ if ($current_action === 'dashboard') {
             <span class="sidebar-badge-newsletter"><?php echo $newsletter_count; ?></span>
           <?php endif; ?>
         </a>
+
+        <!-- Link para gerenciamento de Artigos do Blog -->
+        <a href="painel.php?action=articles" class="<?php echo in_array($current_action, ['articles', 'new_article', 'edit_article']) ? 'active' : ''; ?>">
+          📝 Artigos do Blog
+        </a>
         
         <a href="#" onclick="handleLogout(event)">🚪 Sair</a>
       </nav>
@@ -894,6 +1052,12 @@ if ($current_action === 'dashboard') {
               <h3>Newsletter Leads</h3>
               <span class="number"><?php echo $newsletter_count; ?></span>
               <a href="painel.php?action=newsletter_leads" style="font-size: 0.8rem; color: var(--brand); font-weight: 600; text-decoration: none; display: block; margin-top: 0.5rem;">Gerenciar Leads →</a>
+            </div>
+            <!-- Card de estatística para artigos do blog -->
+            <div class="stat-box" style="border-left: 4px solid #10B981;">
+              <h3>Artigos do Blog</h3>
+              <span class="number"><?php echo $total_articles; ?></span>
+              <a href="painel.php?action=articles" style="font-size: 0.8rem; color: var(--brand); font-weight: 600; text-decoration: none; display: block; margin-top: 0.5rem;">Gerenciar Blog →</a>
             </div>
           </div>
         </div>
@@ -1372,11 +1536,18 @@ if ($current_action === 'dashboard') {
       <!-- 8. TELA: LISTAGEM DE PEDIDOS DE LINK (READ & DELETE) -->
       <?php if ($current_action === 'requests'): ?>
         <div class="painel-card">
+          <!-- Cabeçalho com botão para marcar todas como lidas e contadores de total/novos -->
           <div class="crud-header">
             <div>
-              <h1>Pedidos de Links</h1>
+              <h1>Pedidos de Links <span style="font-size: 1.1rem; font-weight: normal; color: var(--text-muted); margin-left: 0.5rem;">(Total: <?php echo count($requests_list); ?> | Novos: <?php echo $requests_count; ?>)</span></h1>
               <p style="color: var(--text-light); margin-top: 0.25rem;">Gerencie as solicitações de links de descontos feitas por clientes.</p>
             </div>
+            <?php if ($requests_count > 0): ?>
+              <!-- Botão para marcar todos os pedidos de link como vistos/lidos -->
+              <a href="painel.php?action=mark_all_read&type=requests" class="btn-admin-secondary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                ✓ Marcar todos como lidos
+              </a>
+            <?php endif; ?>
           </div>
           
           <!-- Alertas de sucesso ou erro do processamento backend -->
@@ -1391,7 +1562,7 @@ if ($current_action === 'dashboard') {
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th style="width: 60px;">ID</th>
+                  <th style="width: 100px;">ID</th>
                   <th>Cliente</th>
                   <th>WhatsApp</th>
                   <th>Link do Produto</th>
@@ -1402,8 +1573,15 @@ if ($current_action === 'dashboard') {
               <tbody>
                 <?php if (!empty($requests_list)): ?>
                   <?php foreach ($requests_list as $req): ?>
-                    <tr>
-                      <td><strong>#<?php echo $req['id']; ?></strong></td>
+                    <!-- Aplica um fundo azul bem claro se a solicitação ainda não foi vista -->
+                    <tr <?php echo (isset($req['lido']) && !$req['lido']) ? 'style="background-color: #EFF6FF;"' : ''; ?>>
+                      <td>
+                        <strong>#<?php echo $req['id']; ?></strong>
+                        <?php if (isset($req['lido']) && !$req['lido']): ?>
+                          <!-- Badge indicador de nova solicitação -->
+                          <span style="font-size: 0.65rem; background: #3B82F6; color: white; padding: 0.1rem 0.3rem; border-radius: 4px; margin-left: 0.25rem; display: inline-block; vertical-align: middle;">Novo</span>
+                        <?php endif; ?>
+                      </td>
                       <td><strong><?php echo htmlspecialchars($req['nome']); ?></strong></td>
                       <td><?php echo htmlspecialchars($req['whatsapp']); ?></td>
                       <td style="max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
@@ -1445,11 +1623,18 @@ if ($current_action === 'dashboard') {
       <!-- 9. TELA: LISTAGEM E CADASTRO DE LEADS DA NEWSLETTER (CRUD) -->
       <?php if ($current_action === 'newsletter_leads'): ?>
         <div class="painel-card">
+          <!-- Cabeçalho com botão para marcar todas como lidas e contadores de total/novos -->
           <div class="crud-header">
             <div>
-              <h1>Contatos da Newsletter</h1>
+              <h1>Contatos da Newsletter <span style="font-size: 1.1rem; font-weight: normal; color: var(--text-muted); margin-left: 0.5rem;">(Total: <?php echo count($newsletter_leads_list); ?> | Novos: <?php echo $newsletter_count; ?>)</span></h1>
               <p style="color: var(--text-light); margin-top: 0.25rem;">Gerencie os números de WhatsApp cadastrados para receber alertas de ofertas.</p>
             </div>
+            <?php if ($newsletter_count > 0): ?>
+              <!-- Botão para marcar todos os contatos como vistos/lidos -->
+              <a href="painel.php?action=mark_all_read&type=newsletter" class="btn-admin-secondary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                ✓ Marcar todos como lidos
+              </a>
+            <?php endif; ?>
           </div>
           
           <!-- Alertas de sucesso ou erro do processamento backend -->
@@ -1477,7 +1662,7 @@ if ($current_action === 'dashboard') {
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th style="width: 60px;">ID</th>
+                  <th style="width: 100px;">ID</th>
                   <th>WhatsApp</th>
                   <th style="width: 200px;">Data de Cadastro</th>
                   <th style="width: 80px; text-align: center;">Ações</th>
@@ -1486,8 +1671,15 @@ if ($current_action === 'dashboard') {
               <tbody>
                 <?php if (!empty($newsletter_leads_list)): ?>
                   <?php foreach ($newsletter_leads_list as $lead): ?>
-                    <tr>
-                      <td><strong>#<?php echo $lead['id']; ?></strong></td>
+                    <!-- Aplica um fundo azul bem claro se o contato ainda não foi visto -->
+                    <tr <?php echo (isset($lead['lido']) && !$lead['lido']) ? 'style="background-color: #EFF6FF;"' : ''; ?>>
+                      <td>
+                        <strong>#<?php echo $lead['id']; ?></strong>
+                        <?php if (isset($lead['lido']) && !$lead['lido']): ?>
+                          <!-- Badge indicador de novo contato -->
+                          <span style="font-size: 0.65rem; background: #3B82F6; color: white; padding: 0.1rem 0.3rem; border-radius: 4px; margin-left: 0.25rem; display: inline-block; vertical-align: middle;">Novo</span>
+                        <?php endif; ?>
+                      </td>
                       <td><strong><?php echo htmlspecialchars($lead['whatsapp']); ?></strong></td>
                       <td><?php echo date('d/m/Y H:i', strtotime($lead['created_at'])); ?></td>
                       <td>
@@ -1510,6 +1702,184 @@ if ($current_action === 'dashboard') {
               </tbody>
             </table>
           </div>
+        </div>
+      <?php endif; ?>
+
+      <!-- 10. TELA: LISTAGEM DE ARTIGOS DO BLOG (CRUD) -->
+      <?php if ($current_action === 'articles'): ?>
+        <div class="painel-card">
+          <div class="crud-header">
+            <div>
+              <h1>Artigos do Blog <span style="font-size: 1.1rem; font-weight: normal; color: var(--text-muted); margin-left: 0.5rem;">(Total: <?php echo count($articles_list); ?>)</span></h1>
+              <p style="color: var(--text-light); margin-top: 0.25rem;">Gerencie as postagens do blog do seu site.</p>
+            </div>
+            <!-- Botão para redirecionar para a tela de criação de novos artigos -->
+            <a href="painel.php?action=new_article" class="btn-admin-primary">➕ Adicionar Artigo</a>
+          </div>
+          
+          <!-- Alertas de sucesso ou erro do processamento backend -->
+          <?php if (!empty($alertMessage)): ?>
+            <div class="alert-box <?php echo $alertClass; ?>">
+              <?php echo ($alertClass === 'alert-success' ? '✓ ' : '⚠ ') . htmlspecialchars($alertMessage); ?>
+            </div>
+          <?php endif; ?>
+          
+          <!-- Tabela com listagem estruturada de artigos de blog -->
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width: 60px;">ID</th>
+                  <th style="width: 50px;">Banner</th>
+                  <th>Título</th>
+                  <th>Slug</th>
+                  <th style="width: 120px;">Publicado?</th>
+                  <th style="width: 150px;">Data de Cadastro</th>
+                  <th style="width: 120px; text-align: center;">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (!empty($articles_list)): ?>
+                  <?php foreach ($articles_list as $art): ?>
+                    <tr>
+                      <td><strong>#<?php echo $art['id']; ?></strong></td>
+                      <td>
+                        <?php if (!empty($art['imagem_url'])): ?>
+                          <!-- Exibe a miniatura do banner do artigo -->
+                          <img src="<?php echo htmlspecialchars($art['imagem_url']); ?>" alt="" class="admin-thumb">
+                        <?php else: ?>
+                          <div class="admin-thumb" style="display:flex; align-items:center; justify-content:center; background:#E2E8F0;">📝</div>
+                        <?php endif; ?>
+                      </td>
+                      <td><strong><?php echo htmlspecialchars($art['titulo']); ?></strong></td>
+                      <td><code><?php echo htmlspecialchars($art['slug']); ?></code></td>
+                      <td>
+                        <!-- Badge indicador visual do status de publicação -->
+                        <?php if ($art['publicado'] === true): ?>
+                          <span style="background:#D1FAE5; color:#065F46; padding:0.25rem 0.5rem; border-radius:99px; font-weight:700; font-size:0.75rem;">Sim</span>
+                        <?php else: ?>
+                          <span style="background:#F3F4F6; color:#374151; padding:0.25rem 0.5rem; border-radius:99px; font-weight:700; font-size:0.75rem;">Rascunho</span>
+                        <?php endif; ?>
+                      </td>
+                      <td><?php echo date('d/m/Y H:i', strtotime($art['created_at'])); ?></td>
+                      <td>
+                        <div style="display:flex; gap:0.4rem; justify-content: center;">
+                          <!-- Link para visualizar o artigo publicado diretamente no site usando a rota amigável da pasta blog -->
+                          <a href="blog/<?php echo urlencode($art['slug']); ?>" 
+                             class="btn-action btn-edit" 
+                             style="background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD;" 
+                             target="_blank"
+                             title="Visualizar Artigo">
+                            👁️
+                          </a>
+                          <!-- Link para editar o artigo -->
+                          <a href="painel.php?action=edit_article&id=<?php echo $art['id']; ?>" 
+                             class="btn-action btn-edit" 
+                             title="Editar Artigo">
+                            ✏️
+                          </a>
+                          <!-- Link para deletar o artigo -->
+                          <a href="painel.php?action=delete_article&id=<?php echo $art['id']; ?>" 
+                             class="btn-action btn-delete" 
+                             title="Remover Artigo"
+                             onclick="return confirm('Tem certeza que deseja remover este artigo do blog?');">
+                             🗑️
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php else: ?>
+                  <tr>
+                    <td colspan="7" class="text-center text-muted" style="padding: 3rem; text-align: center;">Nenhum artigo cadastrado no momento.</td>
+                  </tr>
+                <?php endif; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <?php endif; ?>
+
+      <!-- 11. TELA: FORMULÁRIO DE CRIAÇÃO / EDIÇÃO DE ARTIGOS (CRUD) -->
+      <?php if ($current_action === 'new_article' || $current_action === 'edit_article'): ?>
+        <?php 
+          $isEdit = ($current_action === 'edit_article');
+          $titleText = $isEdit ? 'Editar Artigo' : 'Adicionar Novo Artigo';
+          $actionVal = $isEdit ? 'update_article' : 'insert_article';
+        ?>
+        <div class="painel-card">
+          <div class="crud-header">
+            <div>
+              <h1><?php echo $titleText; ?></h1>
+              <p style="color: var(--text-light); margin-top: 0.25rem;">Preencha os campos abaixo para criar ou atualizar um artigo no blog.</p>
+            </div>
+          </div>
+          
+          <!-- Formulário de gerenciamento de Artigo com suporte a envio de arquivos (multipart/form-data) -->
+          <form action="painel.php?action=articles" method="POST" enctype="multipart/form-data" class="product-form-grid">
+            <input type="hidden" name="action" value="<?php echo $actionVal; ?>">
+            <?php if ($isEdit): ?>
+              <input type="hidden" name="id" value="<?php echo $edit_article['id']; ?>">
+            <?php endif; ?>
+            
+            <!-- Campo Título -->
+            <div class="form-field form-group-full">
+              <label for="titulo">Título do Artigo</label>
+              <input type="text" id="titulo" name="titulo" required 
+                     value="<?php echo $isEdit ? htmlspecialchars($edit_article['titulo']) : ''; ?>" 
+                     placeholder="Ex: Os Melhores Celulares Custo-Benefício de 2025">
+            </div>
+
+            <!-- Campo Slug -->
+            <div class="form-field">
+              <label for="slug">URL Slug (Opcional)</label>
+              <input type="text" id="slug" name="slug" 
+                     value="<?php echo $isEdit ? htmlspecialchars($edit_article['slug']) : ''; ?>" 
+                     placeholder="Ex: os-melhores-celulares (se vazio, gerará automaticamente)">
+            </div>
+
+            <!-- Campo Status Publicado -->
+            <div class="form-field checkbox-field" style="display:flex; align-items:center; gap:0.5rem; margin-top:1.5rem;">
+              <input type="checkbox" id="publicado" name="publicado" value="1" 
+                     <?php echo ($isEdit && $edit_article['publicado'] === true) ? 'checked' : ''; ?>>
+              <label for="publicado">Publicar imediatamente no site?</label>
+            </div>
+
+            <!-- Campo Banner Image -->
+            <div class="form-field">
+              <label for="imagem_file">Upload de Banner (Arquivo local)</label>
+              <input type="file" id="imagem_file" name="imagem_file" accept="image/*">
+            </div>
+            
+            <div class="form-field">
+              <label for="imagem_url">Banner URL (Alternativa)</label>
+              <input type="text" id="imagem_url" name="imagem_url" 
+                     value="<?php echo ($isEdit && empty($_FILES['imagem_file']['name'])) ? htmlspecialchars($edit_article['imagem_url'] ?? '') : ''; ?>" 
+                     placeholder="https://exemplo.com/imagem.png">
+            </div>
+
+            <!-- Campo Resumo -->
+            <div class="form-field form-group-full">
+              <label for="resumo">Resumo / Prévia</label>
+              <input type="text" id="resumo" name="resumo" required 
+                     value="<?php echo $isEdit ? htmlspecialchars($edit_article['resumo'] ?? '') : ''; ?>" 
+                     placeholder="Ex: Uma breve descrição de 1 ou 2 frases sobre o conteúdo do artigo.">
+            </div>
+
+            <!-- Campo Conteúdo (HTML completo do Artigo) -->
+            <div class="form-field form-group-full">
+              <label for="conteudo">Conteúdo Completo (HTML aceito)</label>
+              <textarea id="conteudo" name="conteudo" required rows="15" 
+                        style="width: 100%; padding: 1rem; border-radius: var(--radius-sm); border: 1.5px solid var(--border); font-family: monospace; font-size: 0.92rem; outline: none; transition: border 0.2s;"
+                        placeholder="Escreva aqui o conteúdo do seu artigo. Você pode usar tags HTML básicas como <p>, <h2>, <strong>, <ul>, etc."><?php echo $isEdit ? htmlspecialchars($edit_article['conteudo']) : ''; ?></textarea>
+            </div>
+
+            <!-- Ações do formulário -->
+            <div class="form-actions form-group-full">
+              <button type="submit" class="btn-admin-primary">💾 Salvar Artigo</button>
+              <a href="painel.php?action=articles" class="btn-admin-secondary">Cancelar</a>
+            </div>
+          </form>
         </div>
       <?php endif; ?>
 

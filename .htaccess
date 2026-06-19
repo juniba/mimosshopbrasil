@@ -1,0 +1,12 @@
+# Ativa o motor de reescrita de URLs do Apache
+RewriteEngine On
+
+# Impede que a regra de reescrita seja aplicada se o arquivo físico de fato existir
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Impede que a regra de reescrita seja aplicada se o diretório físico exato de fato existir
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Regra única: Mapeia '/blog/qualquer-slug' para '/blog/index.php?slug=qualquer-slug'
+# Isso possibilita links amigáveis e estruturados dentro do blog
+RewriteRule ^blog/([a-zA-Z0-9-_]+)/?$ blog/index.php?slug=$1 [L,QSA]
