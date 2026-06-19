@@ -1,3 +1,27 @@
+<?php
+/*
+  sections/hero.php: Painel principal com layout split (duas colunas) no desktop.
+  Agora carrega dinamicamente a quantidade real de produtos cadastrados no Supabase.
+*/
+
+// Prepara o contexto HTTP com as credenciais do Supabase para fazer a requisição de contagem
+$opts_count = [
+    "http" => [
+        "method" => "GET",
+        "header" => "apikey: " . SUPABASE_KEY . "\r\n" .
+                    "Authorization: Bearer " . SUPABASE_KEY . "\r\n"
+    ]
+];
+$context_count = stream_context_create($opts_count);
+
+// URL da API para trazer a lista de identificadores dos produtos cadastrados
+$url_count = SUPABASE_URL . "/rest/v1/produtos?select=id";
+
+// Realiza a chamada com cache local de 5 minutos (300 segundos) para otimizar o desempenho do site
+$response_count = fetch_supabase_with_cache($url_count, $context_count, 300);
+$produtos_list = json_decode($response_count, true);
+$total_produtos = is_array($produtos_list) ? count($produtos_list) : 0;
+?>
 <!-- Seção Hero: Painel principal com layout split (duas colunas) no desktop para destaque visual e otimização de SEO -->
 <section class="hero">
   <!-- Container estruturado para dispor o texto de conversão (SEO) e o banner ilustrativo lado a lado -->
@@ -21,7 +45,7 @@
       </div>
       <!-- Estatísticas gerais do site para gerar prova social e autoridade -->
       <div class="hero-stats">
-        <div class="hero-stat"><strong>+2.400</strong><span>Produtos</span></div>
+        <div class="hero-stat"><strong>+<?php echo number_format($total_produtos, 0, ',', '.'); ?></strong><span>Produtos</span></div>
         <div class="hero-stat"><strong>Até 70%</strong><span>de desconto</span></div>
         <div class="hero-stat"><strong>2 lojas</strong><span>comparadas</span></div>
       </div>

@@ -1,5 +1,6 @@
 <?php
-include 'sections/hero.html';
+// Inclui a seção Hero (agora dinâmica para carregar estatísticas do Supabase)
+include 'sections/hero.php';
 // Inclui a seção de selos de lojas carregadas dinamicamente do Supabase
 include 'sections/store_badges.php';
 // Inclui a seção de categorias carregadas dinamicamente do Supabase
