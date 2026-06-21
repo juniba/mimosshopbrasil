@@ -1,0 +1,8 @@
+# Impedir listagem de diretório por motivos de segurança
+Options -Indexes
+
+# Proteger contra acesso direto a arquivos de configuração se houver
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
