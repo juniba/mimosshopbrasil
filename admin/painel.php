@@ -371,21 +371,33 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete_newsletter' && isset($
 
 // 2h. Ação para sincronizar atualizações com o GitHub localmente (GET)
 if (isset($_GET['action']) && $_GET['action'] === 'git_sync') {
-    // Comando para adicionar todos os arquivos pendentes, criar um commit com data atual e empurrar as alterações
+    // Define a mensagem do commit com a data e hora atual
     $commit_msg = 'atualizacao automatica painel - ' . date('d/m/Y H:i:s');
     
-    // Executa os comandos localmente via shell_exec (estando em ambiente local de desenvolvimento do usuário)
+    // Armazena o diretório de trabalho atual do PHP
+    $original_dir = getcwd();
+    // Altera o diretório de trabalho para a raiz do projeto (uma pasta acima do diretório admin) para que o git atue no repositório inteiro
+    chdir(__DIR__ . '/../');
+    
+    // Executa o comando para adicionar todas as alterações locais ao git (incluindo novos arquivos e modificações na raiz ou subpastas)
     $output_add = shell_exec('git add . 2>&1');
+    // Cria um novo commit com as alterações adicionadas usando a mensagem definida
     $output_commit = shell_exec('git commit -m ' . escapeshellarg($commit_msg) . ' 2>&1');
+    // Envia o commit local para o repositório remoto na branch principal (main)
     $output_push = shell_exec('git push origin main 2>&1');
     
-    // Verifica se houve modificações ou erro no envio
+    // Restaura o diretório de trabalho original do PHP para evitar impactos em outras operações do script
+    chdir($original_dir);
+    
+    // Verifica se não havia nada para ser commitado (repositório limpo)
     if (strpos($output_commit, 'nothing to commit') !== false || strpos($output_commit, 'nada para submeter') !== false) {
         $alertMessage = "Sem novas alterações locais para enviar ao GitHub.";
         $alertClass = "alert-info";
+    // Verifica se o push foi realizado com sucesso ou se já estava tudo atualizado
     } elseif (strpos($output_push, 'Everything up-to-date') !== false || strpos($output_push, 'tudo atualizado') !== false || strpos($output_push, 'To ') !== false || strpos($output_push, 'main -> main') !== false) {
         $alertMessage = "Projeto atualizado e enviado para o GitHub com sucesso!";
         $alertClass = "alert-success";
+    // Lida com erros ou retornos informativos inesperados do comando push
     } else {
         $alertMessage = "Atualização enviada para o GitHub. Resposta do Git: " . nl2br(htmlspecialchars($output_push ?? ''));
         $alertClass = "alert-success";
