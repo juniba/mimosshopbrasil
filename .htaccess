@@ -1,17 +1,20 @@
 # Ativa o motor de reescrita de URLs do Apache
 RewriteEngine On
 
-# Headers de segurança HTTP para proteger contra ataques comuns
-# Bloqueia embedding em iframes de outros sites (proteção contra clickjacking)
-Header always set X-Frame-Options "SAMEORIGIN"
-# Previne que o navegador interprete MIME types incorretos
-Header always set X-Content-Type-Options "nosniff"
-# Ativa proteção nativa contra XSS no navegador
-Header always set X-XSS-Protection "1; mode=block"
-# Garante que referrer não vaze informações sensíveis
-Header always set Referrer-Policy "strict-origin-when-cross-origin"
-# Comentário de regra: CSP para mitigar XSS e injeções, autorizando fontes, scripts (Lucide/Supabase/GoogleAnalytics), imagens e conexões seguras
-Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://www.googletagmanager.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://res.cloudinary.com https://*.supabase.co https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://*.supabase.co https://www.google-analytics.com; frame-ancestors 'self';"
+# Headers de segurança HTTP para proteger contra ataques comuns (caso o mod_headers esteja ativo)
+# Comentário explicativo: a verificação <IfModule mod_headers.c> impede que o Apache quebre com erro 500 se o módulo de cabeçalhos não estiver instalado ou habilitado.
+<IfModule mod_headers.c>
+  # Bloqueia embedding em iframes de outros sites (proteção contra clickjacking)
+  Header always set X-Frame-Options "SAMEORIGIN"
+  # Previne que o navegador interprete MIME types incorretos
+  Header always set X-Content-Type-Options "nosniff"
+  # Ativa proteção nativa contra XSS no navegador
+  Header always set X-XSS-Protection "1; mode=block"
+  # Garante que referrer não vaze informações sensíveis
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  # Comentário de regra: CSP para mitigar XSS e injeções, autorizando fontes, scripts (Lucide/Supabase/GoogleAnalytics), imagens e conexões seguras
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://www.googletagmanager.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://res.cloudinary.com https://*.supabase.co https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://*.supabase.co https://www.google-analytics.com; frame-ancestors 'self';"
+</IfModule>
 
 
 # Impede que a regra de reescrita seja aplicada se o arquivo físico de fato existir
