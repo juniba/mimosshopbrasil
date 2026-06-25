@@ -348,5 +348,3 @@ function check_rate_limit($action, $limit = 5, $window = 60) {
     @file_put_contents($rl_file, json_encode($active_requests));
     return true;
 }
-?>
-
