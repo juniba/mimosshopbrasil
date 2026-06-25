@@ -40,7 +40,7 @@ if (!empty($header_gtm_id)):
     <!-- A logo aponta para a página inicial index.php e exibe apenas a marca gráfica do MCD TrendDeals -->
     <a href="<?php echo $prefix; ?>index.php" class="logo">
       <!-- Comentário explicativo: Substituição do caminho e do texto alt para a nova marca do site -->
-      <img src="<?php echo $prefix; ?>img/logo_mcdtrenddeals.png" alt="MCD TrendDeals" class="logo-img" style="height: 40px;">
+      <img src="<?php echo $prefix; ?>img/logo_mcdmarketprime.png" alt="MCD TrendDeals" class="logo-img" style="height: 40px;">
     </a>
     <!-- Menu de navegação (no centro em desktop, dropdown em mobile) -->
     <nav id="main-nav">

@@ -30,7 +30,7 @@ $footer_categorias = json_decode($footer_response, true);
         <!-- Logo gráfica do MCD TrendDeals no rodapé usando a versão branca (logo_mcdtrenddeals_branca.png) para se destacar no fundo escuro -->
         <div class="footer-logo">
           <!-- Comentário explicativo: Substituição do caminho da imagem e alt do logo no rodapé -->
-          <img src="img/logo_mcdtrenddeals_branca.png" alt="MCD TrendDeals" style="height: 50px; width: auto; object-fit: contain;">
+          <img src="img/logo_mcdmarketprime_branca.png" alt="MCD TrendDeals" style="height: 50px; width: auto; object-fit: contain;">
         </div>
         <p class="footer-desc">Comparador de preços de eletrônicos e utilidades. Encontre as melhores ofertas na Amazon e Mercado Livre todos os dias.</p>
         <div class="affiliate-notice" style="margin-top:1rem;">

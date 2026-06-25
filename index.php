@@ -57,7 +57,7 @@ require_once 'config.php';
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- Preload de recursos críticos de imagem para melhorar o LCP/CLS da nova logo -->
-  <link rel="preload" href="img/logo_mcdtrenddeals.png" as="image">
+  <link rel="preload" href="img/logo_mcdmarketprime.png" as="image">
   <link rel="preload" href="img/banner.png" as="image">
 
   <!-- Favicon para exibição correta na aba do navegador -->

@@ -146,7 +146,7 @@ $artigos_paginated = array_slice($artigos, $offset, $per_page);
         "name": "Mimos Shop Brasil",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://mimosshopbrasil.com/img/logo_mcdtrenddeals.png"
+          "url": "https://mimosshopbrasil.com/img/logo_mcdmarketprime.png"
         }
       }
     }
@@ -170,7 +170,7 @@ $artigos_paginated = array_slice($artigos, $offset, $per_page);
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- Preload de recursos críticos de imagem para melhorar o LCP/CLS -->
-  <link rel="preload" href="img/logo_mcdtrenddeals.png" as="image">
+  <link rel="preload" href="img/logo_mcdmarketprime.png" as="image">
 
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="css/base.min.css">

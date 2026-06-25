@@ -710,7 +710,7 @@ if ($current_action === 'edit_article' && isset($_GET['id'])) {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- Preload de recursos críticos de imagem para melhorar o LCP/CLS -->
-  <link rel="preload" href="../img/logo_mcdtrenddeals.png" as="image">
+  <link rel="preload" href="../img/logo_mcdmarketprime.png" as="image">
 
   <!-- Caminho relativo aos módulos CSS na raiz do projeto (subindo um nível da pasta admin/) -->
   <link rel="stylesheet" href="../css/base.min.css">
