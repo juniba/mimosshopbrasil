@@ -163,11 +163,29 @@ $artigos_paginated = array_slice($artigos, $offset, $per_page);
     <meta property="og:site_name" content="Mimos Shop Brasil">
   <?php endif; ?>
   
+  <!-- Preconnect e fontes do Google Fonts carregadas via head para otimização de renderização -->
+  <!-- Comentário de regra: Este bloco carrega a fonte Inter de forma performática -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Preload de recursos críticos de imagem para melhorar o LCP/CLS -->
+  <link rel="preload" href="img/logo.png" as="image">
+
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/base.min.css">
+  <link rel="stylesheet" href="css/components.min.css">
+  <link rel="stylesheet" href="css/blog.min.css">
+  
+  <?php 
+    // Comentário de regra: Inclui as tags globais de monitoramento do Google Analytics
+    include __DIR__ . '/../sections/analytics.php'; 
+  ?>
 </head>
 <body>
   <?php 
+    // Define o prefixo do caminho relativo para subir um nível a partir do diretório /blog/
+    $path_prefix = '../';
     // Inclui o cabeçalho global com navegação dinâmica
     include __DIR__ . '/../header.php'; 
   ?>
@@ -316,7 +334,7 @@ $artigos_paginated = array_slice($artigos, $offset, $per_page);
           <?php endif; ?>
           
           <!-- Título da seção com linha gradiente decorativa -->
-          <h2 class="blog-section-title">📰 Últimos Artigos</h2>
+          <h2 class="blog-section-title"><i data-lucide="newspaper" style="vertical-align: middle; margin-right: 6px; width: 22px; height: 22px; display: inline-block;"></i> Últimos Artigos</h2>
           
           <!-- Grid de cards dos artigos com animações staggered -->
           <?php if (!empty($artigos_paginated)): ?>
@@ -334,7 +352,7 @@ $artigos_paginated = array_slice($artigos, $offset, $per_page);
                     <!-- Metadados: data + tempo de leitura -->
                     <div class="blog-card-meta">
                       <span class="blog-card-date"><?php echo date('d/m/Y', strtotime($art['created_at'])); ?></span>
-                      <span class="blog-card-reading">⏱ <?php echo calc_reading_time($art['conteudo'] ?? ''); ?> min</span>
+                      <span class="blog-card-reading"><i data-lucide="clock" style="vertical-align: middle; margin-right: 3px; width: 12px; height: 12px; display: inline-block;"></i> <?php echo calc_reading_time($art['conteudo'] ?? ''); ?> min</span>
                     </div>
                     <h3 class="blog-card-title"><?php echo htmlspecialchars($art['titulo']); ?></h3>
                     <p class="blog-card-excerpt"><?php echo htmlspecialchars($art['resumo'] ?? ''); ?></p>
@@ -383,7 +401,7 @@ $artigos_paginated = array_slice($artigos, $offset, $per_page);
           
           <!-- Widget de Busca no Blog -->
           <div class="blog-widget">
-            <h3 class="blog-widget-title">🔍 Buscar</h3>
+            <h3 class="blog-widget-title"><i data-lucide="search" style="vertical-align: middle; margin-right: 6px; width: 16px; height: 16px; display: inline-block;"></i> Buscar</h3>
             <form action="produtos.php" method="GET" class="blog-search-form">
               <input type="text" name="search" placeholder="Buscar no site..." required>
               <button type="submit" aria-label="Buscar">
@@ -394,7 +412,7 @@ $artigos_paginated = array_slice($artigos, $offset, $per_page);
           
           <!-- Widget de Categorias Dinâmicas (carregadas do Supabase) -->
           <div class="blog-widget">
-            <h3 class="blog-widget-title">📂 Categorias</h3>
+            <h3 class="blog-widget-title"><i data-lucide="folder" style="vertical-align: middle; margin-right: 6px; width: 16px; height: 16px; display: inline-block;"></i> Categorias</h3>
             <div class="blog-categories-list">
               <?php if (!empty($blog_categorias)): ?>
                 <?php foreach ($blog_categorias as $cat): ?>
@@ -413,7 +431,7 @@ $artigos_paginated = array_slice($artigos, $offset, $per_page);
           <!-- Widget de Artigos Populares -->
           <?php if (!empty($popular_posts)): ?>
             <div class="blog-widget">
-              <h3 class="blog-widget-title">🔥 Mais Populares</h3>
+              <h3 class="blog-widget-title"><i data-lucide="flame" style="vertical-align: middle; margin-right: 6px; width: 16px; height: 16px; display: inline-block;"></i> Mais Populares</h3>
               <div class="blog-popular-list">
                 <?php foreach ($popular_posts as $pop): ?>
                   <a href="blog/<?php echo urlencode($pop['slug']); ?>" class="blog-popular-item">
@@ -446,7 +464,7 @@ $artigos_paginated = array_slice($artigos, $offset, $per_page);
   ?>
   
   <!-- Script principal do site -->
-  <script src="js/main.js"></script>
+  <script src="js/main.min.js"></script>
   
   <?php if ($slug !== null && $artigo !== null): ?>
   <!-- Script da barra de progresso de leitura: avança conforme o scroll do artigo -->

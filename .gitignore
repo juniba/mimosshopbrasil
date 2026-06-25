@@ -5,3 +5,9 @@ cache/*
 
 # Exclui a pasta de scripts temporários e rascunhos (scratch/)
 scratch/
+
+# Exclui a pasta de dependências do Node.js
+node_modules/
+
+# Exclui o arquivo de log do WhatsApp gerado localmente
+whatsapp_log.txt

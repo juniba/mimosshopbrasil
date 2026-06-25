@@ -1,0 +1,329 @@
+/* 
+   admin.css — Estilos da Área Administrativa (Painel de Controle) e da Página de Login.
+   Inclui grid de layout, sidebar, cards de estatísticas, formulários de login e componentes do CRUD.
+*/
+
+/* ==========================================================================
+   PAINEL ADMINISTRATIVO (Layout Principal)
+   ========================================================================== */
+
+/* Grid container principal que organiza o sidebar e o conteúdo do painel */
+.painel-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  display: grid;
+  grid-template-columns: 260px 1fr; /* 260px para a barra lateral e o restante para o conteúdo */
+  gap: 2rem;
+  padding: 0 1.5rem;
+  min-height: calc(100vh - 380px); /* Garante que o painel ocupe boa altura na viewport */
+}
+
+/* Sidebar do painel de controle */
+.painel-sidebar {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  height: fit-content; /* Se adapta ao conteúdo */
+}
+
+/* Título de seção interno do sidebar */
+.sidebar-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+/* Lista de navegação lateral */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Links do menu lateral da sidebar */
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Efeito de hover nos links da sidebar */
+.sidebar-nav a:hover {
+  background: var(--brand-light);
+  color: var(--brand);
+}
+
+/* Link ativo da página atual no painel */
+.sidebar-nav a.active {
+  background: var(--brand);
+  color: var(--white);
+}
+
+/* Badge estilizado para exibir contagem de notificações e novos acontecimentos no painel lateral */
+.sidebar-badge {
+  background: #EF4444; /* Vermelho vibrante para chamar a atenção para novas atividades */
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+  margin-left: auto; /* Alinha o badge no canto direito do link do flexbox */
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+/* Badge diferenciado para a newsletter para diferenciar visualmente os contadores */
+.sidebar-badge-newsletter {
+  background: #2563EB; /* Azul para inscritos da newsletter */
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+  margin-left: auto;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+/* Conteúdo principal do painel */
+.painel-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Card base para abrigar as informações administrativas */
+.painel-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2.5rem 2rem;
+  box-shadow: var(--shadow);
+}
+
+.painel-card h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.painel-card p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+/* Grade que organiza os blocos de estatísticas */
+.dashboard-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Bloco individual de estatística */
+.stat-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-box:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.stat-box h3 {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.stat-box .number {
+  display: block;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--brand);
+}
+
+/* ==========================================================================
+   PÁGINA DE LOGIN ADMINISTRATIVO (mcd.php)
+   ========================================================================== */
+
+/* Corpo da página de login com fundo cinza-suave e textura de estrelinhas */
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #e5e7eb;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.18'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  padding: 1.5rem;
+}
+
+/* Card central de login (Efeito Glassmorphism/Translúcido) */
+.login-box {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(255, 255, 255, 0.85); /* Fundo branco translúcido */
+  backdrop-filter: blur(8px); /* Blur de fundo elegante */
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius);
+  padding: 3rem 2.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  text-align: center;
+}
+
+/* Logo da marca na box de login */
+.login-logo {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--brand);
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.5px;
+}
+
+.login-logo span {
+  color: var(--text);
+}
+
+.login-box h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.login-box p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+/* Grupo de campos de input do formulário de login */
+.login-form-group {
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.login-form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.4rem;
+}
+
+.login-form-group input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Efeito de foco brilhante azul nos inputs */
+.login-form-group input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px rgba(0, 87, 255, 0.12);
+}
+
+/* Caixa de exibição de erros do Supabase */
+.login-error-box {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #DC2626;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  line-height: 1.4;
+}
+
+/* Botão de login principal */
+.btn-login {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.85rem;
+  background: var(--brand);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  overflow: hidden;
+}
+
+.btn-login:hover {
+  background: var(--brand-dark);
+}
+
+.btn-login:active {
+  transform: scale(0.98);
+}
+
+/* Loader animado em formato spinner */
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Link de voltar para a página inicial */
+.login-back {
+  margin-top: 1.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.25rem;
+}
+
+.login-back a {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s;
+}
+
+.login-back a:hover {
+  color: var(--brand);
+}

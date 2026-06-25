@@ -129,5 +129,11 @@ if (!empty($produtos_comp)) {
     </table>
     <!-- Nota informativa da tabela -->
     <p style="font-size:0.78rem;color:var(--text-light);margin-top:0.75rem;">✓ = Melhor preço encontrado hoje. Preços sujeitos a alteração.</p>
+    
+    <!-- Indicador de rolagem lateral para experiência mobile otimizada -->
+    <!-- Comentário de regra: Este parágrafo é exibido apenas em telas menores via media queries do CSS global -->
+    <p class="mobile-table-hint" style="display:none; font-size:0.75rem; color:var(--text-light); text-align:center; margin-top:0.5rem; gap:0.25rem; align-items:center; justify-content:center;">
+      <span>📱 Deslize a tabela para o lado para ver mais</span>
+    </p>
   </div>
 </section>

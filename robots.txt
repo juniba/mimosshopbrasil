@@ -4,10 +4,8 @@
 User-agent: *
 Allow: /
 
-# Bloqueia o acesso a páginas administrativas e arquivos internos
-Disallow: /painel.php
-Disallow: /mcd.php
-Disallow: /auth_session.php
+# Bloqueia o acesso à pasta administrativa inteira e arquivos internos
+Disallow: /admin/
 Disallow: /cache/
 Disallow: /scratch/
 

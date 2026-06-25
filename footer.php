@@ -63,6 +63,9 @@ $footer_categorias = json_decode($footer_response, true);
         <a href="blog/">Blog</a>
         <a href="links.php">Links de Desconto</a>
         <a href="index.php#newsletter">Newsletter</a>
+        <!-- Comentário de regra: Links institucionais obrigatórios de privacidade e termos da LGPD/Afiliados -->
+        <a href="privacidade.php">Política de Privacidade</a>
+        <a href="termos.php">Termos de Uso</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -71,4 +74,23 @@ $footer_categorias = json_decode($footer_response, true);
       <span>Preços e disponibilidade podem variar. Verifique na loja antes de comprar.</span>
     </div>
   </div>
+  
+  <!-- Botão Voltar ao Topo (Back to Top) com ícone de seta elegante -->
+  <!-- Comentário de regra: Este botão auxilia a navegabilidade em páginas longas e é controlado via js/main.js -->
+  <button id="back-to-top" class="back-to-top" aria-label="Voltar ao topo" title="Voltar ao topo">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+    </svg>
+  </button>
 </footer>
+
+<!-- Biblioteca de ícones Lucide para visual premium -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  // Inicialização do Lucide para carregar os ícones SVG nos elementos com atributo data-lucide
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  });
+</script>

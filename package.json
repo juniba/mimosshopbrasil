@@ -1,0 +1,14 @@
+{
+  "name": "mimosshopbrasil",
+  "version": "1.0.0",
+  "description": "Mimos Shop Brasil - Comparador de Preços e Ofertas",
+  "scripts": {
+    "minify-css": "cleancss -o css/base.min.css css/base.css && cleancss -o css/components.min.css css/components.css && cleancss -o css/admin.min.css css/admin.css && cleancss -o css/blog.min.css css/blog.css",
+    "minify-js": "terser js/main.js -o js/main.min.js --compress --mangle",
+    "build": "npm run minify-css && npm run minify-js"
+  },
+  "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "terser": "^5.31.1"
+  }
+}

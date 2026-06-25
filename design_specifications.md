@@ -1,6 +1,6 @@
-# 🎨 Especificações de Design e Tipografia — Painel TechDeal
+# 🎨 Especificações de Design e Tipografia — Painel MimosShopBrasil
 
-Este arquivo contém referências rápidas sobre o layout, dimensões e a escala de fontes configurada no painel administrativo do TechDeal.
+Este arquivo contém referências rápidas sobre o layout, dimensões e a escala de fontes configurada no painel administrativo do MimosShopBrasil.
 
 ---
 
@@ -96,7 +96,7 @@ th:nth-child(8) {
 
 ## ☁️ Armazenamento de Imagens (Cloudinary & WebP)
 
-Para otimização de performance e entrega rápida de assets através de CDN, todas as imagens do catálogo do TechDeal são processadas e armazenadas no Cloudinary em formato otimizado WebP.
+Para otimização de performance e entrega rápida de assets através de CDN, todas as imagens do catálogo do MimosShopBrasil são processadas e armazenadas no Cloudinary em formato otimizado WebP.
 
 ### Fluxo de Processamento de Imagens
 

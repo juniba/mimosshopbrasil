@@ -63,7 +63,7 @@ def convert_and_upload(source_path):
         
     # Obtém o timestamp do Unix para expiração da requisição
     timestamp = int(time.time())
-    folder = "techdeal"
+    folder = "MimosShopBrasil"
     
     # Constrói a assinatura baseada nos parâmetros em ordem alfabética
     # Formato: parameter1=value1&parameter2=value2<api_secret>

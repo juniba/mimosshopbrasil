@@ -93,133 +93,58 @@ if ($sort_filter === 'discount' && !empty($produtos)) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- SEO Meta Tags básicas -->
-  <title>Encomendas de Links de Produtos – TechDeal</title>
-  <meta name="description" content="Confira os links de desconto de encomendas solicitadas por nossos clientes. Aproveite ofertas de afiliados com cupons e preços especiais garantidos.">
-  <meta name="keywords" content="TechDeal, encomendas, links com desconto, ofertas de afiliados, cupons de desconto">
+  <!-- SEO Meta Tags atualizadas para Mimos Shop Brasil com URLs absolutas -->
+  <title>Encomendas de Links com Desconto – Mimos Shop Brasil</title>
+  <meta name="description" content="Confira os links de desconto personalizados do Mimos Shop Brasil. Encomendas de afiliados com cupons e preços especiais garantidos para Amazon e Mercado Livre.">
+  <meta name="keywords" content="Mimos Shop Brasil, encomendas, links com desconto, ofertas de afiliados, cupons de desconto">
   <meta name="robots" content="index, follow">
+  <!-- URL canônica absoluta para evitar duplicidade de conteúdo no Google -->
+  <link rel="canonical" href="https://mimosshopbrasil.com/links.php">
   
-  <!-- Open Graph Meta Tags -->
-  <meta property="og:title" content="Encomendas de Links de Produtos – TechDeal">
-  <meta property="og:description" content="Confira as encomendas e links com descontos exclusivos criados a pedido dos clientes no TechDeal.">
-  <meta property="og:image" content="og_banner.png">
+  <!-- Open Graph Meta Tags com URLs absolutas para compartilhamento otimizado em redes sociais -->
+  <meta property="og:title" content="Encomendas de Links com Desconto – Mimos Shop Brasil">
+  <meta property="og:description" content="Confira as encomendas e links com descontos exclusivos criados a pedido dos clientes no Mimos Shop Brasil.">
+  <meta property="og:image" content="https://mimosshopbrasil.com/og_banner.png">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="links.php">
-  <meta property="og:site_name" content="TechDeal">
+  <meta property="og:url" content="https://mimosshopbrasil.com/links.php">
+  <meta property="og:site_name" content="Mimos Shop Brasil">
   
   <!-- Favicon para exibição correta na aba do navegador -->
   <link rel="icon" type="image/png" href="favicon.png">
   
-  <link rel="stylesheet" href="css/style.css">
+  <!-- Preconnect e fontes do Google Fonts carregadas via head para otimização de renderização -->
+  <!-- Comentário de regra: Este bloco carrega a fonte Inter de forma performática -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Estilos customizados locais para a página de links (Filtros e Layout) -->
-  <style>
-    /* Linha de cabeçalho unindo o título e a barra de filtros */
-    .produtos-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      margin-top: 2rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    
-    /* Configurações tipográficas do título da página */
-    .produtos-header-row h2 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--text);
-      letter-spacing: -0.5px;
-      margin: 0;
-    }
-    
-    /* Grid horizontal dos filtros rápidos */
-    .produtos-quick-filters {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    /* Estilização premium dos seletores (dropdowns) */
-    .produtos-quick-filters select {
-      padding: 0.6rem 2rem 0.6rem 0.8rem;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid var(--border);
-      font-size: 0.85rem;
-      font-weight: 600;
-      outline: none;
-      background: var(--white);
-      color: var(--text);
-      cursor: pointer;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      min-width: 160px;
-      /* Ícone de seta customizado para um visual elegante e integrado */
-      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%234a5568' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 0.75rem center;
-      background-size: 0.75rem;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-    }
-    
-    /* Efeito de foco nos seletores */
-    .produtos-quick-filters select:focus {
-      border-color: var(--brand);
-      box-shadow: 0 0 0 4px rgba(0, 87, 255, 0.12);
-    }
-    
-    /* Responsividade para telas menores */
-    @media (max-width: 768px) {
-      .produtos-header-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .produtos-quick-filters {
-        width: 100%;
-      }
-      .produtos-quick-filters select {
-        flex: 1;
-        min-width: 120px;
-      }
-    }
-    
-    /* Centraliza e dá espaçamento para a grade de produtos */
-    .produtos-grid-wrap {
-      max-width: 1200px;
-      margin: 0 auto 4rem auto;
-      padding: 0 1.5rem;
-    }
-    
-    .text-center {
-      text-align: center;
-    }
-    
-    /* Botão simples estilo admin para limpar filtros */
-    .btn-clear-filters {
-      background: var(--brand);
-      color: var(--white);
-      padding: 0.65rem 1.25rem;
-      border-radius: var(--radius-sm);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.9rem;
-      display: inline-block;
-      margin-top: 1rem;
-      transition: background 0.2s;
-    }
-    .btn-clear-filters:hover {
-      background: var(--brand-dark);
-    }
-  </style>
+  <!-- Preload de recursos críticos de imagem para melhorar o LCP/CLS -->
+  <link rel="preload" href="img/logo.png" as="image">
+
+  <!-- Folhas de estilo modulares contendo variáveis, layouts de componentes e os estilos específicos para filtros e catálogos -->
+  <link rel="stylesheet" href="css/base.min.css">
+  <link rel="stylesheet" href="css/components.min.css">
+  
+  <?php 
+    // Comentário de regra: Inclui as tags globais de monitoramento do Google Analytics
+    include 'sections/analytics.php'; 
+  ?>
 </head>
 <body>
   <?php 
     // Carrega o cabeçalho dinâmico baseado no status de login
     include 'header.php'; 
   ?>
+
+  <!-- Comentário de regra: Breadcrumbs de navegação hierárquica para melhorar a usabilidade e SEO -->
+  <div class="produtos-grid-wrap" style="margin-bottom: 0; padding-top: 1rem;">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="index.php">Home</a>
+      <span class="separator">/</span>
+      <span class="current">Links</span>
+    </nav>
+  </div>
+
 
   <!-- Container da Grade de Produtos de Encomenda -->
   <div class="produtos-grid-wrap">
@@ -290,51 +215,8 @@ if ($sort_filter === 'discount' && !empty($produtos)) {
         // Se houver produtos de encomenda retornados do Supabase, renderiza os cards
         if (!empty($produtos)): 
           foreach ($produtos as $p):
-            // Trata os descontos de forma visual
-            $desconto_html = "";
-            if (!empty($p['desconto'])) {
-                $desconto_html = '<span class="badge-discount">' . htmlspecialchars($p['desconto']) . '</span>';
-            }
-            
-            // Trata as lojas associadas
-            $store_name = !empty($p['store']['nome']) ? htmlspecialchars($p['store']['nome']) : 'Parceiro';
-            $store_css = !empty($p['store']['css_class']) ? htmlspecialchars($p['store']['css_class']) . '-sm' : 'badge-amazon-sm';
-            
-            // Formata os preços no formato brasileiro (R$ X.XXX,XX)
-            $preco_novo_fmt = "R$ " . number_format($p['preco_novo'], 2, ',', '.');
-            $preco_antigo_html = "";
-            if (!empty($p['preco_antigo'])) {
-                $preco_antigo_fmt = "R$ " . number_format($p['preco_antigo'], 2, ',', '.');
-                $preco_antigo_html = '<div class="price-old">' . $preco_antigo_fmt . '</div>';
-            }
-
-            // Define o slug de rastreamento de cliques
-            $click_slug = $p['slug_comparativo'] ?: 'encomenda-' . $p['id'];
-            $nota_estrelas = '5.0';
-      ?>
-        <!-- Card do produto com estrutura exatamente idêntica às ofertas -->
-        <div class="product-card" data-store="<?php echo htmlspecialchars($p['loja']); ?>">
-          <div class="product-img">
-            <!-- Imagem e badges do produto -->
-            <img src="<?php echo htmlspecialchars($p['imagem_url']); ?>" alt="<?php echo htmlspecialchars($p['titulo']); ?>" class="product-img-real">
-            <?php echo $desconto_html; ?>
-            <span class="badge-store <?php echo $store_css; ?>"><?php echo $store_name; ?></span>
-          </div>
-          <div class="product-body">
-            <p class="product-title"><?php echo htmlspecialchars($p['titulo']); ?></p>
-            <div class="product-rating">
-              <span class="stars"><?php echo htmlspecialchars($p['estrelas'] ?? '★★★★★'); ?></span>
-              <span><?php echo $nota_estrelas; ?> (<?php echo number_format($p['avaliacoes'] ?? 1, 0, ',', '.'); ?> avaliações)</span>
-            </div>
-            <div class="product-price">
-              <?php echo $preco_antigo_html; ?>
-              <div class="price-new"><?php echo $preco_novo_fmt; ?></div>
-            </div>
-            <!-- Botão de compra de afiliado -->
-            <a href="<?php echo htmlspecialchars($p['link_afiliado']); ?>" class="btn-buy btn-<?php echo htmlspecialchars($p['loja']); ?>" onclick="trackClick('<?php echo htmlspecialchars($p['loja']); ?>', '<?php echo htmlspecialchars($click_slug); ?>')">Ver na <?php echo $store_name; ?> →</a>
-          </div>
-        </div>
-      <?php 
+            // Renderiza o card do produto usando o template unificado
+            include 'sections/product_card.php';
           endforeach; 
         else:
       ?>
@@ -351,6 +233,6 @@ if ($sort_filter === 'discount' && !empty($produtos)) {
     // Carrega o rodapé dinâmico do site
     include 'footer.php'; 
   ?>
-  <script src="js/main.js"></script>
+  <script src="js/main.min.js"></script>
 </body>
 </html>

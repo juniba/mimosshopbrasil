@@ -30,7 +30,7 @@ function send_new_product_notification($product) {
     $link = $product['link_afiliado'] ?? '';
     
     // 3. Monta o corpo da mensagem com formatação para WhatsApp (negrito com asteriscos)
-    $message = "🔥 *NOVA OFERTA ANUNCIADA NO TECHDEAL!* 🔥\n\n";
+    $message = "🔥 *NOVA OFERTA ANUNCIADA NO MimosShopBrasil!* 🔥\n\n";
     $message .= "*{$titulo}*\n";
     $message .= "Preço incrível: *R$ {$preco}*\n\n";
     if (!empty($link)) {

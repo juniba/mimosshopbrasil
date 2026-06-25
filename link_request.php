@@ -10,8 +10,19 @@ header('Content-Type: application/json; charset=utf-8');
 // Requer as configurações globais e funções utilitárias
 require_once 'config.php';
 
+// Comentário de regra: Proteção contra flooding/spam - Limita a 3 pedidos de link por minuto por IP para evitar abuso do CallMeBot
+if (!check_rate_limit('link_request', 3, 60)) {
+    http_response_code(429);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Muitas solicitações enviadas em curto espaço de tempo. Aguarde um minuto e tente novamente.'
+    ]);
+    exit;
+}
+
 // Apenas aceita requisições do tipo POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+
     http_response_code(405);
     echo json_encode([
         'success' => false,

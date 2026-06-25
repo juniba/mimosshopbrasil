@@ -1,5 +1,5 @@
 /**
- * JavaScript do projeto TechDeal.
+ * JavaScript do projeto MimosShopBrasil.
  * Controla os filtros da vitrine de produtos e fornece feedback visual 
  * interativo ao se inscrever na newsletter de ofertas.
  */
@@ -237,4 +237,82 @@ document.addEventListener('DOMContentLoaded', () => {
       e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
     });
   }
+
+  // Comportamento do botão Voltar ao Topo (Back to Top)
+  // Comentário de regra: Esta rotina escuta o scroll e gerencia a visibilidade do botão flutuante.
+  const backToTopBtn = document.getElementById('back-to-top');
+  if (backToTopBtn) {
+    // Escuta o scroll da tela
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.add('show');
+      } else {
+        backToTopBtn.classList.remove('show');
+      }
+    });
+
+    // Rola suavemente ao topo ao clicar
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  }
+
+  // Comentário de regra: Inicializa o status dos corações de favoritos a partir do localStorage
+  updateHeartButtons();
 });
+
+/**
+ * Adiciona ou remove um ID de produto do localStorage (favoritos) e atualiza os botões visuais.
+ * @param {number} productId - ID do produto
+ * @param {Event} event - Evento de clique para impedir propagação e comportamento padrão
+ */
+function toggleFavorite(productId, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
+  // Comentário de regra: Obtém a lista atual de favoritos salvos em JSON no localStorage
+  let favorites = JSON.parse(localStorage.getItem('mimos_favorites') || '[]');
+  const index = favorites.indexOf(productId);
+  
+  if (index === -1) {
+    // Adiciona à lista se não existir
+    favorites.push(productId);
+  } else {
+    // Remove da lista se já existir
+    favorites.splice(index, 1);
+  }
+  
+  // Salva a lista atualizada de volta no localStorage
+  localStorage.setItem('mimos_favorites', JSON.stringify(favorites));
+  
+  // Atualiza as cores dos corações
+  updateHeartButtons();
+  
+  // Se o usuário estiver na página de favoritos, recarrega a página para atualizar a vitrine
+  if (window.location.pathname.includes('favoritos.php')) {
+    // Constrói a nova lista de IDs para recarregar com os parâmetros GET sincronizados
+    const currentIds = favorites.join(',');
+    window.location.href = 'favoritos.php?ids=' + currentIds;
+  }
+}
+
+/**
+ * Varre todos os botões com a classe .btn-wishlist e ativa o preenchimento vermelho se o ID estiver nos favoritos.
+ */
+function updateHeartButtons() {
+  const favorites = JSON.parse(localStorage.getItem('mimos_favorites') || '[]');
+  document.querySelectorAll('.btn-wishlist').forEach(btn => {
+    const id = parseInt(btn.dataset.id);
+    if (favorites.includes(id)) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+}
+

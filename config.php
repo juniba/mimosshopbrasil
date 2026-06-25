@@ -108,6 +108,13 @@ define('CLOUDINARY_CLOUD_NAME', get_env_safe('CLOUDINARY_CLOUD_NAME'));
 define('CLOUDINARY_API_KEY', get_env_safe('CLOUDINARY_API_KEY'));
 define('CLOUDINARY_API_SECRET', get_env_safe('CLOUDINARY_API_SECRET'));
 
+// Comentário de regra: ID de Acompanhamento do Google Analytics (GA4) carregado a partir do arquivo .env
+define('GOOGLE_ANALYTICS_ID', get_env_safe('GOOGLE_ANALYTICS_ID'));
+
+// Comentário de regra: ID do Container do Google Tag Manager (GTM) carregado a partir das variáveis de ambiente (.env)
+define('GOOGLE_TAG_MANAGER_ID', get_env_safe('GOOGLE_TAG_MANAGER_ID'));
+
+
 /*
   Para uso no frontend JavaScript, expomos as variáveis do Supabase de forma segura.
   Como a anon key é pública por design do Supabase, não há riscos em expô-la no client-side.
@@ -283,4 +290,63 @@ function supabase_admin_request($method, $endpoint, $data = null, $use_admin_aut
         return json_decode($response, true);
     }
 }
+
+/**
+ * Função de Rate Limiting baseada em arquivo para proteger os endpoints públicos contra flooding/spam.
+ * Identifica o cliente pelo endereço de IP real (considerando proxies como os do Render).
+ *
+ * @param string $action Nome identificador do endpoint a ser limitado.
+ * @param int $limit Número máximo de requisições permitidas na janela de tempo.
+ * @param int $window Tamanho da janela de tempo em segundos.
+ * @return bool Retorna verdadeiro se a requisição é permitida, falso se excedeu o limite.
+ */
+function check_rate_limit($action, $limit = 5, $window = 60) {
+    // Comentário de regra: Obtém o IP do cliente decodificando proxies reversos se existirem
+    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+    
+    // Divide caso múltiplos proxies retornem uma lista de IPs
+    $ip = explode(',', $ip)[0];
+    $ip = trim($ip);
+    
+    // Cria um hash único misturando o IP e a ação para gerar o arquivo de cache
+    $ip_hash = md5($ip . $action);
+    $cache_dir = __DIR__ . '/cache';
+    
+    // Cria o diretório de cache se ele ainda não estiver criado
+    if (!is_dir($cache_dir)) {
+        @mkdir($cache_dir, 0777, true);
+    }
+    
+    // Define o caminho para o arquivo de log específico do IP e ação
+    $rl_file = $cache_dir . '/rl_' . $ip_hash . '.json';
+    $now = time();
+    $requests = [];
+    
+    // Se o arquivo existir, lê os carimbos de data/hora (timestamps) das requisições anteriores
+    if (file_exists($rl_file)) {
+        $data = @file_get_contents($rl_file);
+        if ($data !== false) {
+            $requests = json_decode($data, true) ?: [];
+        }
+    }
+    
+    // Filtra e mantém apenas as requisições que ocorreram dentro da janela de tempo atual
+    $active_requests = [];
+    foreach ($requests as $timestamp) {
+        if ($now - $timestamp < $window) {
+            $active_requests[] = $timestamp;
+        }
+    }
+    
+    // Se o número de requisições ativas atingiu o limite, impede a nova requisição
+    if (count($active_requests) >= $limit) {
+        return false;
+    }
+    
+    // Adiciona o carimbo de data/hora atual na lista de requisições válidas e salva o arquivo
+    $active_requests[] = $now;
+    @file_put_contents($rl_file, json_encode($active_requests));
+    return true;
+}
 ?>
+

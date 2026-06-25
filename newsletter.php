@@ -11,8 +11,19 @@ header('Content-Type: application/json; charset=utf-8');
 // Inclui o arquivo de configuração geral com as credenciais do Supabase
 require_once 'config.php';
 
+// Comentário de regra: Proteção contra flooding/spam - Limita a 5 cadastros por minuto por IP
+if (!check_rate_limit('newsletter', 5, 60)) {
+    http_response_code(429);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Muitas solicitações enviadas em curto espaço de tempo. Aguarde um minuto e tente novamente.'
+    ]);
+    exit;
+}
+
 // Verifica se a requisição é do tipo POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+
     http_response_code(405);
     echo json_encode([
         'success' => false,

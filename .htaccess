@@ -10,6 +10,9 @@ Header always set X-Content-Type-Options "nosniff"
 Header always set X-XSS-Protection "1; mode=block"
 # Garante que referrer não vaze informações sensíveis
 Header always set Referrer-Policy "strict-origin-when-cross-origin"
+# Comentário de regra: CSP para mitigar XSS e injeções, autorizando fontes, scripts (Lucide/Supabase/GoogleAnalytics), imagens e conexões seguras
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://www.googletagmanager.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://res.cloudinary.com https://*.supabase.co https://www.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://*.supabase.co https://www.google-analytics.com; frame-ancestors 'self';"
+
 
 # Impede que a regra de reescrita seja aplicada se o arquivo físico de fato existir
 RewriteCond %{REQUEST_FILENAME} !-f
