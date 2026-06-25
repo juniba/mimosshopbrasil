@@ -27,9 +27,10 @@ $footer_categorias = json_decode($footer_response, true);
   <div class="footer-inner">
     <div class="footer-grid">
       <div>
-        <!-- Logo gráfica do Mimos Shop Brasil no rodapé usando a versão clara (logo-light.png) para se destacar no fundo escuro -->
+        <!-- Logo gráfica do MCD TrendDeals no rodapé usando a versão branca (logo_mcdtrenddeals_branca.png) para se destacar no fundo escuro -->
         <div class="footer-logo">
-          <img src="img/logo-light.png" alt="Mimos Shop Brasil" style="height: 50px; width: auto; object-fit: contain;">
+          <!-- Comentário explicativo: Substituição do caminho da imagem e alt do logo no rodapé -->
+          <img src="img/logo_mcdtrenddeals_branca.png" alt="MCD TrendDeals" style="height: 50px; width: auto; object-fit: contain;">
         </div>
         <p class="footer-desc">Comparador de preços de eletrônicos e utilidades. Encontre as melhores ofertas na Amazon e Mercado Livre todos os dias.</p>
         <div class="affiliate-notice" style="margin-top:1rem;">
@@ -69,8 +70,8 @@ $footer_categorias = json_decode($footer_response, true);
       </div>
     </div>
     <div class="footer-bottom">
-      <!-- Direitos autorais atualizados para Mimos Shop Brasil -->
-      <span>© 2026 Mimos Shop Brasil. Todos os direitos reservados.</span>
+      <!-- Direitos autorais atualizados para a nova marca MCD TrendDeals -->
+      <span>© 2026 MCD TrendDeals. Todos os direitos reservados.</span>
       <span>Preços e disponibilidade podem variar. Verifique na loja antes de comprar.</span>
     </div>
   </div>

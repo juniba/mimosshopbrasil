@@ -56,7 +56,7 @@ if (!empty($ids_param)) {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- Preload de recursos críticos de imagem para melhorar o LCP/CLS -->
-  <link rel="preload" href="img/logo.png" as="image">
+  <link rel="preload" href="img/logo_mcdtrenddeals.png" as="image">
 
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="css/base.min.css">
