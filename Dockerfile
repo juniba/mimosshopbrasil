@@ -3,7 +3,7 @@
 FROM php:8.3-apache
 
 # Habilita o mod_rewrite do Apache para suporte a reescrita de URLs se necessário
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers && echo "ServerName mcdmarketprime.com" > /etc/apache2/conf-available/servername.conf && a2enconf servername
 
 # Copia todos os arquivos do projeto para o diretório público do servidor Apache
 COPY . /var/www/html/
