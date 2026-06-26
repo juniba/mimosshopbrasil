@@ -24,7 +24,8 @@ require_once 'config.php';
   <!-- Preload de recursos críticos de imagem para melhorar o LCP/CLS -->
   <link rel="preload" href="img/logo_mcdmarketprime.png" as="image">
 
-  <link rel="icon" type="image/png" href="favicon.png">
+  <!-- Favicon para exibição correta na aba do navegador -->
+  <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="stylesheet" href="css/base.min.css">
   <link rel="stylesheet" href="css/components.min.css">
   <style>

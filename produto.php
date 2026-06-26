@@ -121,7 +121,8 @@ if (!empty($p['slug_comparativo'])) {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png">
+  <!-- Favicon para exibição correta na aba do navegador -->
+  <link rel="icon" type="image/png" href="img/favicon.png">
 
   <!-- Estilos globais e componentes -->
   <link rel="stylesheet" href="css/base.min.css">

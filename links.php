@@ -110,7 +110,8 @@ if ($sort_filter === 'discount' && !empty($produtos)) {
   <meta property="og:site_name" content="MCD Market Prime">
   
   <!-- Favicon para exibição correta na aba do navegador -->
-  <link rel="icon" type="image/png" href="favicon.png">
+  <!-- Definição do ícone do site para branding e identificação visual -->
+  <link rel="icon" type="image/png" href="img/favicon.png">
   
   <!-- Preconnect e fontes do Google Fonts carregadas via head para otimização de renderização -->
   <!-- Comentário de regra: Este bloco carrega a fonte Inter de forma performática -->

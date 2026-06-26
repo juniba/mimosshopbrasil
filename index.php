@@ -61,7 +61,7 @@ require_once 'config.php';
   <link rel="preload" href="img/banner.png" as="image">
 
   <!-- Favicon para exibição correta na aba do navegador -->
-  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/png" href="img/favicon.png">
   
   <link rel="stylesheet" href="css/base.min.css">
   <link rel="stylesheet" href="css/components.min.css">
@@ -72,7 +72,7 @@ require_once 'config.php';
   ?>
 </head>
 <body>
-    <a href="#main-content" class="skip-link">Pular para o conteúdo</a>
+<!-- Skip link removed -->
   <?php 
     // Carrega o cabeçalho dinâmico baseado no status de login
     include 'header.php'; 
