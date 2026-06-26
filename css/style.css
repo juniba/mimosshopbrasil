@@ -1,25 +1,44 @@
-/* 
-   style.css — Arquivo agregador principal de estilos do MCD Market Prime.
-   Importa todos os módulos CSS modulares para manter compatibilidade retroativa.
-   
-   Qualquer página que referencia css/style.css continuará funcionando normalmente,
-   pois este arquivo carrega todos os módulos na ordem correta de cascata.
-   
-   Módulos:
-   1. base.css        → Reset, variáveis, tipografia e utilitários globais
-   2. components.css  → Header, Hero, Cards, Filtros, Newsletter, Footer + responsividade mobile
-   3. admin.css       → Painel administrativo, Sidebar, Dashboard, Login
-   4. blog.css        → Blog completo: hero, cards, sidebar, artigo, paginação
+/* style.css – Design premium para mcdmarketprime */
+   Comentário: Define cores harmoniosas, tipografia Inter, layout responsivo, micro‑animações e glassmorphism.
 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* 1. Fundação: Reset global, variáveis CSS, tipografia e classes utilitárias */
-@import url('base.css');
+:root {
+  --color-bg: hsl(210, 30%, 20%);
+  --color-primary: hsl(210, 70%, 60%);
+  --color-accent: hsl(210, 80%, 70%);
+  --color-text: hsl(0, 0%, 90%);
+  --color-muted: hsl(210, 10%, 40%);
+  --font-family: 'Inter', sans-serif;
+}
 
-/* 2. Componentes do site público: Header, Hero, Seções, Cards, Filtros, Newsletter e Footer */
-@import url('components.css');
+* {box-sizing:border-box;margin:0;padding:0;}
 
-/* 3. Área administrativa: Painel de controle, Sidebar, Dashboard e Login */
-@import url('admin.css');
+body {font-family:var(--font-family);background:var(--color-bg);color:var(--color-text);line-height:1.6;overflow-x:hidden;}
 
-/* 4. Blog: Design premium com hero, cards, sidebar, artigos e paginação */
-@import url('blog.css');
+header {background:rgba(255,255,255,0.05);backdrop-filter:blur(8px);box-shadow:0 2px 8px rgba(0,0,0,0.3);position:sticky;top:0;z-index:1000;}
+
+.header-inner {max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0.5rem 1rem;}
+
+.logo-img {height:48px;transition:transform 0.3s ease;}
+.logo-img:hover {transform:scale(1.1);}
+
+nav#main-nav a {color:var(--color-text);text-decoration:none;margin:0 0.75rem;position:relative;padding:0.25rem 0;transition:color 0.2s;}
+nav#main-nav a.active,nav#main-nav a:hover {color:var(--color-primary);}
+nav#main-nav a.active::after {content:'';position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--color-primary);}
+
+.header-badge {background:var(--color-primary);color:#fff;border-radius:999px;padding:0 6px;font-size:0.75rem;margin-left:4px;animation:pulse 2s infinite;}
+@keyframes pulse {0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);}}
+
+.header-search {display:flex;align-items:center;background:rgba(255,255,255,0.1);border-radius:4px;padding:4px 8px;}
+.header-search input {background:transparent;border:none;color:var(--color-text);outline:none;width:150px;}
+.header-search svg {margin-right:4px;stroke:var(--color-muted);}
+
+.menu-toggle {display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;}
+.menu-toggle span {display:block;width:24px;height:2px;background:var(--color-text);}
+@media (max-width:768px){.menu-toggle{display:flex;}nav#main-nav{display:none;flex-direction:column;background:var(--color-bg);position:absolute;top:60px;right:0;width:200px;}nav#main-nav.show{display:flex;}}
+
+.product-card {background:rgba(255,255,255,0.08);border-radius:12px;padding:1rem;backdrop-filter:blur(12px);transition:transform 0.3s,box-shadow 0.3s;}
+.product-card:hover {transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,0,0,0.4);}
+
+footer {background:rgba(0,0,0,0.5);color:var(--color-muted);text-align:center;padding:1rem;font-size:0.85rem;}

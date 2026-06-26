@@ -20,6 +20,14 @@ $is_favoritos = (basename($current_script) === 'favoritos.php');
 $is_blog = (strpos($current_script, '/blog/') !== false);
 $is_painel = (strpos($current_script, '/admin/') !== false);
 ?>
+<?php include __DIR__ . '/seo.php'; ?>
+<?php
+// Gerar e imprimir tags SEO padrão
+echo "<title>" . seo_title() . "</title>\n";
+echo "<meta name=\"description\" content=\"" . seo_description() . "\">\n";
+echo seo_open_graph();
+echo "\n" . seo_json_ld_site();
+?>
 <?php
 // Comentário explicativo: Se o GTM estiver ativo, injeta o snippet noscript logo no início do corpo da página para fallbacks
 $header_gtm_id = defined('GOOGLE_TAG_MANAGER_ID') ? GOOGLE_TAG_MANAGER_ID : '';

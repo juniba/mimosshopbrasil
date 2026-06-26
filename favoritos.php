@@ -66,7 +66,7 @@ if (!empty($ids_param)) {
   <script>
     (function() {
       try {
-        const favs = JSON.parse(localStorage.getItem('mimos_favorites') || '[]');
+        const favs = JSON.parse(localStorage.getItem('mcd_favorites') || '[]');
         const urlParams = new URLSearchParams(window.location.search);
         const idsParam = urlParams.get('ids') || '';
         

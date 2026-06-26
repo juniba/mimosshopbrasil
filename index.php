@@ -72,6 +72,7 @@ require_once 'config.php';
   ?>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Pular para o conteúdo</a>
   <?php 
     // Carrega o cabeçalho dinâmico baseado no status de login
     include 'header.php'; 

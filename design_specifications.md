@@ -1,6 +1,6 @@
-# 🎨 Especificações de Design e Tipografia — Painel MimosShopBrasil
+# 🎨 Especificações de Design e Tipografia — Painel MCD Market Prime
 
-Este arquivo contém referências rápidas sobre o layout, dimensões e a escala de fontes configurada no painel administrativo do MimosShopBrasil.
+Este arquivo contém referências rápidas sobre o layout, dimensões e a escala de fontes configurada no painel administrativo do MCD Market Prime.
 
 ---
 
@@ -96,7 +96,7 @@ th:nth-child(8) {
 
 ## ☁️ Armazenamento de Imagens (Cloudinary & WebP)
 
-Para otimização de performance e entrega rápida de assets através de CDN, todas as imagens do catálogo do MimosShopBrasil são processadas e armazenadas no Cloudinary em formato otimizado WebP.
+Para otimização de performance e entrega rápida de assets através de CDN, todas as imagens do catálogo do MCD Market Prime são processadas e armazenadas no Cloudinary em formato otimizado WebP.
 
 ### Fluxo de Processamento de Imagens
 
