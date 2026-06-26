@@ -93,21 +93,21 @@ if ($sort_filter === 'discount' && !empty($produtos)) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- SEO Meta Tags atualizadas para Mimos Shop Brasil com URLs absolutas -->
-  <title>Encomendas de Links com Desconto – Mimos Shop Brasil</title>
-  <meta name="description" content="Confira os links de desconto personalizados do Mimos Shop Brasil. Encomendas de afiliados com cupons e preços especiais garantidos para Amazon e Mercado Livre.">
-  <meta name="keywords" content="Mimos Shop Brasil, encomendas, links com desconto, ofertas de afiliados, cupons de desconto">
+  <!-- SEO Meta Tags atualizadas para MCD Market Prime com URLs absolutas -->
+  <title>Encomendas de Links com Desconto – MCD Market Prime</title>
+  <meta name="description" content="Confira os links de desconto personalizados do MCD Market Prime. Encomendas de afiliados com cupons e preços especiais garantidos para Amazon e Mercado Livre.">
+  <meta name="keywords" content="MCD Market Prime, encomendas, links com desconto, ofertas de afiliados, cupons de desconto">
   <meta name="robots" content="index, follow">
   <!-- URL canônica absoluta para evitar duplicidade de conteúdo no Google -->
-  <link rel="canonical" href="https://mimosshopbrasil.com/links.php">
+  <link rel="canonical" href="https://mcdmarketprime.com/links.php">
   
   <!-- Open Graph Meta Tags com URLs absolutas para compartilhamento otimizado em redes sociais -->
-  <meta property="og:title" content="Encomendas de Links com Desconto – Mimos Shop Brasil">
-  <meta property="og:description" content="Confira as encomendas e links com descontos exclusivos criados a pedido dos clientes no Mimos Shop Brasil.">
-  <meta property="og:image" content="https://mimosshopbrasil.com/og_banner.png">
+  <meta property="og:title" content="Encomendas de Links com Desconto – MCD Market Prime">
+  <meta property="og:description" content="Confira as encomendas e links com descontos exclusivos criados a pedido dos clientes no MCD Market Prime.">
+  <meta property="og:image" content="https://mcdmarketprime.com/og_banner.png">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://mimosshopbrasil.com/links.php">
-  <meta property="og:site_name" content="Mimos Shop Brasil">
+  <meta property="og:url" content="https://mcdmarketprime.com/links.php">
+  <meta property="og:site_name" content="MCD Market Prime">
   
   <!-- Favicon para exibição correta na aba do navegador -->
   <link rel="icon" type="image/png" href="favicon.png">

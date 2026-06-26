@@ -81,7 +81,7 @@ if (empty($admin_phone)) {
 if (!empty($api_token)) {
     // Monta uma mensagem detalhada formatada para o WhatsApp do administrador
     // Mensagem formatada para WhatsApp com a marca atualizada
-    $notification_msg = "🔔 *Nova Encomenda de Link no Mimos Shop Brasil!* 🔔\n\n";
+    $notification_msg = "🔔 *Nova Encomenda de Link no MCD Market Prime!* 🔔\n\n";
     $notification_msg .= "👤 *Cliente:* {$nome}\n";
     $notification_msg .= "📱 *WhatsApp:* {$whatsapp}\n";
     $notification_msg .= "🔗 *Link do Produto:* {$link}\n";

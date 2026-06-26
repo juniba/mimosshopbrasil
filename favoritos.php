@@ -44,10 +44,10 @@ if (!empty($ids_param)) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meus Favoritos – Mimos Shop Brasil</title>
-  <meta name="description" content="Confira os produtos salvos em sua lista de desejos no Mimos Shop Brasil. Veja preços e cupons das melhores ofertas salvos para depois.">
+  <title>Meus Favoritos – MCD Market Prime</title>
+  <meta name="description" content="Confira os produtos salvos em sua lista de desejos no MCD Market Prime. Veja preços e cupons das melhores ofertas salvos para depois.">
   <meta name="robots" content="noindex, nofollow">
-  <link rel="canonical" href="https://mimosshopbrasil.com/favoritos.php">
+  <link rel="canonical" href="https://mcdmarketprime.com/favoritos.php">
   
   <!-- Preconnect e fontes do Google Fonts carregadas via head para otimização de renderização -->
   <!-- Comentário de regra: Este bloco carrega a fonte Inter de forma performática -->

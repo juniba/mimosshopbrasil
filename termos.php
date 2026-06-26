@@ -1,6 +1,6 @@
 <?php
 /*
-  termos.php: Página de Termos de Uso do Mimos Shop Brasil.
+  termos.php: Página de Termos de Uso do MCD Market Prime.
   Descreve as responsabilidades do usuário e as notas de afiliação e preços.
 */
 require_once 'config.php';
@@ -10,10 +10,10 @@ require_once 'config.php';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Termos de Uso – Mimos Shop Brasil</title>
-  <meta name="description" content="Leia os Termos de Uso do Mimos Shop Brasil. Entenda os termos de serviço, isenção de responsabilidade sobre preços e políticas de links afiliados.">
+  <title>Termos de Uso – MCD Market Prime</title>
+  <meta name="description" content="Leia os Termos de Uso do MCD Market Prime. Entenda os termos de serviço, isenção de responsabilidade sobre preços e políticas de links afiliados.">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://mimosshopbrasil.com/termos.php">
+  <link rel="canonical" href="https://mcdmarketprime.com/termos.php">
   
   <!-- Preconnect e fontes do Google Fonts carregadas via head para otimização de renderização -->
   <!-- Comentário de regra: Este bloco carrega a fonte Inter de forma performática -->
@@ -74,10 +74,10 @@ require_once 'config.php';
     <h1>Termos de Uso</h1>
     <p>Última atualização: 20 de Junho de 2026</p>
     
-    <p>Bem-vindo ao <strong>Mimos Shop Brasil</strong>. Ao acessar e utilizar este site, você concorda em cumprir e estar vinculado aos seguintes Termos de Uso. Caso não concorde com qualquer uma das condições estabelecidas, solicitamos que não utilize nossa plataforma.</p>
+    <p>Bem-vindo ao <strong>MCD Market Prime</strong>. Ao acessar e utilizar este site, você concorda em cumprir e estar vinculado aos seguintes Termos de Uso. Caso não concorde com qualquer uma das condições estabelecidas, solicitamos que não utilize nossa plataforma.</p>
 
     <h2>1. Escopo dos Serviços</h2>
-    <p>O Mimos Shop Brasil atua como um comparador de preços, agregador de ofertas e canal de divulgação de cupons de desconto. Nós não vendemos nenhum produto diretamente. Todas as transações financeiras, envios de mercadorias e garantias pós-venda são de responsabilidade exclusiva dos respectivos parceiros varejistas (como Amazon e Mercado Livre).</p>
+    <p>O MCD Market Prime atua como um comparador de preços, agregador de ofertas e canal de divulgação de cupons de desconto. Nós não vendemos nenhum produto diretamente. Todas as transações financeiras, envios de mercadorias e garantias pós-venda são de responsabilidade exclusiva dos respectivos parceiros varejistas (como Amazon e Mercado Livre).</p>
 
     <h2>2. Isenção de Responsabilidade sobre Preços e Estoques</h2>
     <p>Trabalhamos intensamente para manter os preços e links de ofertas sempre atualizados. No entanto:</p>
@@ -88,7 +88,7 @@ require_once 'config.php';
     </ul>
 
     <h2>3. Política de Links de Afiliados</h2>
-    <p>Para manter o serviço gratuito e ativo, o Mimos Shop Brasil utiliza links de afiliado. Isso significa que ao clicar em um link promocional exibido em nosso catálogo ou solicitado via formulário de pedidos, e concluir uma compra no site parceiro, nós poderemos receber uma pequena comissão pela indicação. Esta operação não adiciona nenhum centavo ao custo final do seu produto.</p>
+    <p>Para manter o serviço gratuito e ativo, o MCD Market Prime utiliza links de afiliado. Isso significa que ao clicar em um link promocional exibido em nosso catálogo ou solicitado via formulário de pedidos, e concluir uma compra no site parceiro, nós poderemos receber uma pequena comissão pela indicação. Esta operação não adiciona nenhum centavo ao custo final do seu produto.</p>
 
     <h2>4. Modificações do Termo</h2>
     <p>Reservamo-nos o direito de alterar estes Termos de Uso a qualquer momento para refletir melhorias no serviço ou adequações legais. Recomendamos que os usuários visitem esta página periodicamente.</p>

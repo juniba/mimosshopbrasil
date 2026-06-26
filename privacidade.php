@@ -1,6 +1,6 @@
 <?php
 /*
-  privacidade.php: Página de Política de Privacidade do Mimos Shop Brasil.
+  privacidade.php: Página de Política de Privacidade do MCD Market Prime.
   Exibe os termos de conformidade com a LGPD e regras do programa de afiliados.
 */
 require_once 'config.php';
@@ -10,10 +10,10 @@ require_once 'config.php';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Política de Privacidade – Mimos Shop Brasil</title>
-  <meta name="description" content="Leia a Política de Privacidade do Mimos Shop Brasil. Entenda como tratamos seus dados e nossa conformidade com a LGPD e programas de afiliados.">
+  <title>Política de Privacidade – MCD Market Prime</title>
+  <meta name="description" content="Leia a Política de Privacidade do MCD Market Prime. Entenda como tratamos seus dados e nossa conformidade com a LGPD e programas de afiliados.">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://mimosshopbrasil.com/privacidade.php">
+  <link rel="canonical" href="https://mcdmarketprime.com/privacidade.php">
   
   <!-- Preconnect e fontes do Google Fonts carregadas via head para otimização de renderização -->
   <!-- Comentário de regra: Este bloco carrega a fonte Inter de forma performática -->
@@ -74,7 +74,7 @@ require_once 'config.php';
     <h1>Política de Privacidade</h1>
     <p>Última atualização: 20 de Junho de 2026</p>
     
-    <p>A sua privacidade é de extrema importância para nós do <strong>Mimos Shop Brasil</strong>. Esta Política de Privacidade descreve como coletamos, usamos, processamos e protegemos as informações fornecidas por você ao acessar nosso site e ao utilizar nossos serviços de indicação de produtos e ofertas.</p>
+    <p>A sua privacidade é de extrema importância para nós do <strong>MCD Market Prime</strong>. Esta Política de Privacidade descreve como coletamos, usamos, processamos e protegemos as informações fornecidas por você ao acessar nosso site e ao utilizar nossos serviços de indicação de produtos e ofertas.</p>
 
     <h2>1. Informações Coletadas</h2>
     <p>Coletamos informações das seguintes formas:</p>
@@ -96,7 +96,7 @@ require_once 'config.php';
     <h2>3. Divulgação a Terceiros e Links de Afiliados</h2>
     <p>Nós não vendemos nem alugamos suas informações pessoais. No entanto, observe que:</p>
     <ul>
-      <li><strong>Programas de Afiliados:</strong> O Mimos Shop Brasil participa de programas de afiliados (como o Associados da Amazon e o Mercado Livre). Ao clicar em links de ofertas e cupons, você será redirecionado para a loja parceira, que possui sua própria política de privacidade e cookies de rastreamento de vendas.</li>
+      <li><strong>Programas de Afiliados:</strong> O MCD Market Prime participa de programas de afiliados (como o Associados da Amazon e o Mercado Livre). Ao clicar em links de ofertas e cupons, você será redirecionado para a loja parceira, que possui sua própria política de privacidade e cookies de rastreamento de vendas.</li>
       <li><strong>Serviços de Envio:</strong> Utilizamos integrações terceirizadas de entrega de mensagens (como CallMeBot) para disparar notificações ao administrador e aos usuários, respeitando as normas aplicáveis de segurança da informação.</li>
     </ul>
 

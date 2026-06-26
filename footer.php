@@ -1,6 +1,6 @@
 <?php
 /*
-  footer.php: Rodapé dinâmico do site Mimos Shop Brasil.
+  footer.php: Rodapé dinâmico do site MCD Market Prime.
   Carrega as categorias do Supabase para exibir links dinâmicos no rodapé,
   garantindo que novas categorias adicionadas via painel apareçam automaticamente.
 */

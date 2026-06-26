@@ -54,8 +54,8 @@ $total_produtos = is_array($produtos_list) ? count($produtos_list) : 0;
     <!-- Coluna do Banner Visual: Exibe o banner ilustrativo adicionado pelo usuário -->
     <div class="hero-image">
       <!-- Banner otimizado com tag alt descritiva para melhorar o posicionamento no Google Imagens -->
-      <!-- Banner com alt descritivo atualizado para SEO e identidade Mimos Shop Brasil -->
-      <img src="img/banner.png" alt="Comparador de Preços e Promoções de Eletrônicos no Mimos Shop Brasil" class="hero-banner-img" width="750" height="789" loading="lazy">
+      <!-- Banner com alt descritivo atualizado para SEO e identidade MCD Market Prime -->
+      <img src="img/banner.png" alt="Comparador de Preços e Promoções de Eletrônicos no MCD Market Prime" class="hero-banner-img" width="750" height="789" loading="lazy">
     </div>
 
   </div>

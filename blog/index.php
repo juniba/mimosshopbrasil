@@ -1,6 +1,6 @@
 <?php
 /*
-  blog/index.php: Página pública principal do blog do Mimos Shop Brasil (REDESIGN MODERNO).
+  blog/index.php: Página pública principal do blog do MCD Market Prime (REDESIGN MODERNO).
   Exibe o feed de artigos com layout premium (Hero Destaque com Gradiente, Cards Animados,
   Sidebar com Widgets Dinâmicos, Paginação Server-Side) ou abre uma postagem específica
   com breadcrumbs, barra de progresso de leitura, compartilhamento social e artigos relacionados.
@@ -112,19 +112,19 @@ $artigos_paginated = array_slice($artigos, $offset, $per_page);
   
   <?php if ($artigo !== null): ?>
     <!-- SEO Meta Tags para o Artigo de Blog específico -->
-    <title><?php echo htmlspecialchars($artigo['titulo']); ?> – Mimos Shop Brasil</title>
+    <title><?php echo htmlspecialchars($artigo['titulo']); ?> – MCD Market Prime</title>
     <meta name="description" content="<?php echo htmlspecialchars($artigo['resumo'] ?? ''); ?>">
-    <meta name="author" content="Mimos Shop Brasil">
-    <link rel="canonical" href="https://mimosshopbrasil.com/blog/<?php echo htmlspecialchars($artigo['slug']); ?>">
+    <meta name="author" content="MCD Market Prime">
+    <link rel="canonical" href="https://mcdmarketprime.com/blog/<?php echo htmlspecialchars($artigo['slug']); ?>">
     <!-- Open Graph para compartilhamento otimizado do artigo -->
-    <meta property="og:title" content="<?php echo htmlspecialchars($artigo['titulo']); ?> – Mimos Shop Brasil">
+    <meta property="og:title" content="<?php echo htmlspecialchars($artigo['titulo']); ?> – MCD Market Prime">
     <meta property="og:description" content="<?php echo htmlspecialchars($artigo['resumo'] ?? ''); ?>">
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://mimosshopbrasil.com/blog/<?php echo htmlspecialchars($artigo['slug']); ?>">
+    <meta property="og:url" content="https://mcdmarketprime.com/blog/<?php echo htmlspecialchars($artigo['slug']); ?>">
     <?php if (!empty($artigo['imagem_url'])): ?>
       <meta property="og:image" content="<?php echo htmlspecialchars($artigo['imagem_url']); ?>">
     <?php endif; ?>
-    <meta property="og:site_name" content="Mimos Shop Brasil">
+    <meta property="og:site_name" content="MCD Market Prime">
     
     <!-- Schema.org Article JSON-LD para SEO estruturado no Google -->
     <script type="application/ld+json">
@@ -139,28 +139,28 @@ $artigos_paginated = array_slice($artigos, $offset, $per_page);
       "datePublished": "<?php echo $artigo['created_at']; ?>",
       "author": {
         "@type": "Organization",
-        "name": "Mimos Shop Brasil"
+        "name": "MCD Market Prime"
       },
       "publisher": {
         "@type": "Organization",
-        "name": "Mimos Shop Brasil",
+        "name": "MCD Market Prime",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://mimosshopbrasil.com/img/logo_mcdmarketprime.png"
+          "url": "https://mcdmarketprime.com/img/logo_mcdmarketprime.png"
         }
       }
     }
     </script>
   <?php else: ?>
     <!-- SEO Meta Tags para a Listagem Geral do Blog -->
-    <title>Blog – Mimos Shop Brasil | Dicas de Ofertas e Eletrônicos</title>
-    <meta name="description" content="Leia as melhores dicas, comparativos e guias de compra de celulares, eletrônicos e utilidades no blog do Mimos Shop Brasil.">
-    <link rel="canonical" href="https://mimosshopbrasil.com/blog/">
-    <meta property="og:title" content="Blog – Mimos Shop Brasil | Dicas de Ofertas e Eletrônicos">
-    <meta property="og:description" content="Leia as melhores dicas, comparativos e guias de compra de celulares, eletrônicos e utilidades no blog do Mimos Shop Brasil.">
+    <title>Blog – MCD Market Prime | Dicas de Ofertas e Eletrônicos</title>
+    <meta name="description" content="Leia as melhores dicas, comparativos e guias de compra de celulares, eletrônicos e utilidades no blog do MCD Market Prime.">
+    <link rel="canonical" href="https://mcdmarketprime.com/blog/">
+    <meta property="og:title" content="Blog – MCD Market Prime | Dicas de Ofertas e Eletrônicos">
+    <meta property="og:description" content="Leia as melhores dicas, comparativos e guias de compra de celulares, eletrônicos e utilidades no blog do MCD Market Prime.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mimosshopbrasil.com/blog/">
-    <meta property="og:site_name" content="Mimos Shop Brasil">
+    <meta property="og:url" content="https://mcdmarketprime.com/blog/">
+    <meta property="og:site_name" content="MCD Market Prime">
   <?php endif; ?>
   
   <!-- Preconnect e fontes do Google Fonts carregadas via head para otimização de renderização -->
@@ -248,7 +248,7 @@ $artigos_paginated = array_slice($artigos, $offset, $per_page);
             <span class="blog-share-label">Compartilhar:</span>
             <?php 
               // Monta as URLs de compartilhamento para cada rede social
-              $share_url = 'https://mimosshopbrasil.com/blog/' . urlencode($artigo['slug']);
+              $share_url = 'https://mcdmarketprime.com/blog/' . urlencode($artigo['slug']);
               $share_title = urlencode($artigo['titulo']); 
             ?>
             <a href="https://api.whatsapp.com/send?text=<?php echo $share_title . '%20' . urlencode($share_url); ?>" target="_blank" rel="noopener" class="blog-share-btn whatsapp" title="Compartilhar no WhatsApp">

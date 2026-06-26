@@ -16,8 +16,8 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Título atualizado para a marca Mimos Shop Brasil -->
-  <title>Login Administrativo – Mimos Shop Brasil</title>
+  <!-- Título atualizado para a marca MCD Market Prime -->
+  <title>Login Administrativo – MCD Market Prime</title>
   <!-- Preconnect e fontes do Google Fonts carregadas via head para otimização de renderização -->
   <!-- Comentário de regra: Este bloco carrega a fonte Inter de forma performática -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 
   <!-- Caixa de Login (Card com efeito Glassmorphism) -->
   <div class="login-box">
-    <!-- Logo atualizado para Mimos Shop Brasil -->
+    <!-- Logo atualizado para MCD Market Prime -->
     <div class="login-logo">
       Mimos<span>Shop</span>
     </div>
@@ -46,7 +46,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
     <form id="login-form">
       <div class="login-form-group">
         <label for="email">E-mail</label>
-        <input type="email" id="email" required placeholder="admin@MimosShopBrasil.com" autocomplete="email">
+        <input type="email" id="email" required placeholder="admin@MCDMarketPrime.com" autocomplete="email">
       </div>
       <div class="login-form-group">
         <label for="password">Senha</label>

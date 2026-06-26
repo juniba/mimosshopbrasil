@@ -1,5 +1,5 @@
 /**
- * JavaScript do projeto MimosShopBrasil.
+ * JavaScript do projeto MCDMarketPrime.
  * Controla os filtros da vitrine de produtos e fornece feedback visual 
  * interativo ao se inscrever na newsletter de ofertas.
  */

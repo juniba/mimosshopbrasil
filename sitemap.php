@@ -10,7 +10,7 @@ require_once 'config.php';
 header('Content-Type: application/xml; charset=utf-8');
 
 // URL base do site (configurável para ambiente de produção)
-$base_url = 'https://mimosshopbrasil.com';
+$base_url = 'https://mcdmarketprime.com';
 
 // Prepara o contexto HTTP para consultas ao Supabase
 $sitemap_opts = [

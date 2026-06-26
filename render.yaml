@@ -3,7 +3,7 @@
 
 services:
   - type: web
-    name: mimosshopbrasil
+    name: mcdmarketprime
     # Define o ambiente como docker para utilizar o Dockerfile do projeto
     env: docker
     # Usa o plano free (gratuito) do Render

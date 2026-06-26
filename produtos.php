@@ -116,20 +116,20 @@ $paginated_produtos = array_slice($produtos, $offset, $items_per_page);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <!-- SEO Meta Tags básicas -->
-  <!-- SEO Meta Tags atualizadas para Mimos Shop Brasil -->
-  <title>Catálogo Completo de Ofertas – Mimos Shop Brasil</title>
-  <meta name="description" content="Explore o catálogo completo de ofertas do Mimos Shop Brasil. Pesquise e compare preços de eletrônicos, utilidades e presentes das melhores lojas.">
-  <meta name="keywords" content="Mimos Shop Brasil, catálogo de produtos, buscar ofertas, eletrônicos, utilidades, comparar preços, cupons">
+  <!-- SEO Meta Tags atualizadas para MCD Market Prime -->
+  <title>Catálogo Completo de Ofertas – MCD Market Prime</title>
+  <meta name="description" content="Explore o catálogo completo de ofertas do MCD Market Prime. Pesquise e compare preços de eletrônicos, utilidades e presentes das melhores lojas.">
+  <meta name="keywords" content="MCD Market Prime, catálogo de produtos, buscar ofertas, eletrônicos, utilidades, comparar preços, cupons">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://mimosshopbrasil.com/produtos.php">
+  <link rel="canonical" href="https://mcdmarketprime.com/produtos.php">
   
   <!-- Open Graph Meta Tags com URLs absolutas para compartilhamento otimizado em redes sociais -->
-  <meta property="og:title" content="Catálogo Completo de Ofertas – Mimos Shop Brasil">
-  <meta property="og:description" content="Busque e filtre ofertas das principais lojas parceiras com descontos exclusivos no Mimos Shop Brasil.">
-  <meta property="og:image" content="https://mimosshopbrasil.com/og_banner.png">
+  <meta property="og:title" content="Catálogo Completo de Ofertas – MCD Market Prime">
+  <meta property="og:description" content="Busque e filtre ofertas das principais lojas parceiras com descontos exclusivos no MCD Market Prime.">
+  <meta property="og:image" content="https://mcdmarketprime.com/og_banner.png">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://mimosshopbrasil.com/produtos.php">
-  <meta property="og:site_name" content="Mimos Shop Brasil">
+  <meta property="og:url" content="https://mcdmarketprime.com/produtos.php">
+  <meta property="og:site_name" content="MCD Market Prime">
   
   <!-- Favicon para exibição correta na aba do navegador -->
   <link rel="icon" type="image/png" href="favicon.png">

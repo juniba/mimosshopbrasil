@@ -103,17 +103,17 @@ if (!empty($p['slug_comparativo'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <!-- SEO tags dinâmicas baseadas no produto para melhor indexação no Google -->
-  <title><?php echo htmlspecialchars($p['titulo']); ?> – Vale a pena comprar? | Mimos Shop Brasil</title>
+  <title><?php echo htmlspecialchars($p['titulo']); ?> – Vale a pena comprar? | MCD Market Prime</title>
   <meta name="description" content="Confira nossa análise detalhada, prós e contras, preço atualizado e perguntas frequentes sobre o produto <?php echo htmlspecialchars($p['titulo']); ?>. Faça uma compra segura.">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://mimosshopbrasil.com/produto.php?id=<?php echo $id; ?>">
+  <link rel="canonical" href="https://mcdmarketprime.com/produto.php?id=<?php echo $id; ?>">
   
   <!-- Twitter & Facebook Open Graph Tags -->
   <meta property="og:title" content="<?php echo htmlspecialchars($p['titulo']); ?> – Vale a pena comprar?">
   <meta property="og:description" content="Saiba tudo antes de comprar! Veja as vantagens, desvantagens, avaliação e onde encontrar o menor preço na Amazon ou Mercado Livre.">
   <meta property="og:image" content="<?php echo htmlspecialchars($p['imagem_url']); ?>">
   <meta property="og:type" content="product">
-  <meta property="og:url" content="https://mimosshopbrasil.com/produto.php?id=<?php echo $id; ?>">
+  <meta property="og:url" content="https://mcdmarketprime.com/produto.php?id=<?php echo $id; ?>">
 
   <!-- Preconnect e Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -628,7 +628,7 @@ if (!empty($p['slug_comparativo'])) {
       <section class="prod-full-box">
         <h2 class="prod-sec-title">⚖️ Comparativo de Preços & Lojas</h2>
         <p class="prod-desc-text" style="margin-bottom: 1.5rem;">
-          Encontramos o mesmo produto em diferentes lojas parceiras do <strong>Mimos Shop Brasil</strong>. Escolha a que oferece a melhor oferta hoje:
+          Encontramos o mesmo produto em diferentes lojas parceiras do <strong>MCD Market Prime</strong>. Escolha a que oferece a melhor oferta hoje:
         </p>
         
         <table class="price-comp-table">
@@ -673,7 +673,7 @@ if (!empty($p['slug_comparativo'])) {
         
         <?php if (!empty($p['comparacao'])): ?>
           <div class="prod-desc-text" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);">
-            <strong>Análise do Mimos Shop:</strong> <?php echo nl2br(htmlspecialchars($p['comparacao'])); ?>
+            <strong>Análise do MCD Market Prime:</strong> <?php echo nl2br(htmlspecialchars($p['comparacao'])); ?>
           </div>
         <?php endif; ?>
       </section>

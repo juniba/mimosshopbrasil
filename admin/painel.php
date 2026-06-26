@@ -701,8 +701,8 @@ if ($current_action === 'edit_article' && isset($_GET['id'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Título do painel atualizado para Mimos Shop Brasil -->
-  <title>Painel de Controle – Mimos Shop Brasil</title>
+  <!-- Título do painel atualizado para MCD Market Prime -->
+  <title>Painel de Controle – MCD Market Prime</title>
   <!-- Preconnect e fontes do Google Fonts carregadas via head para otimização de renderização -->
   <!-- Comentário de regra: Este bloco carrega a fonte Inter de forma performática -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1633,7 +1633,7 @@ if ($current_action === 'edit_article' && isset($_GET['id'])) {
                 <input type="text" id="slug_comparativo" name="slug_comparativo" placeholder="Ex: sony-wh1000xm5"
                        value="<?php echo ($current_action === 'edit' && $edit_product['slug_comparativo'] !== null) ? htmlspecialchars($edit_product['slug_comparativo']) : ''; ?>">
                 <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem; display: block;">
-                  Ao usar o mesmo slug comparativo em múltiplos produtos com lojas diferentes, o MimosShopBrasil agrupa-os na tabela de comparação de preços automaticamente.
+                  Ao usar o mesmo slug comparativo em múltiplos produtos com lojas diferentes, o MCDMarketPrime agrupa-os na tabela de comparação de preços automaticamente.
                 </small>
               </div>
 
